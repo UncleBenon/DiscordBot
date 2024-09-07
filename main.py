@@ -79,9 +79,9 @@ async def stable(ctx : commands.Context, *, prompt : str):
                     discord.File(f, filename="image.png")
                 )
         if len(neg) > 1:
-            await ctx.reply(f"#Stable Diff: {neg[0]}\nnegative prompt: {neg[1]}",files=files)
+            await ctx.reply(f"# Stable Diff: {neg[0]}\nnegative prompt: {neg[1]}",files=files)
         else:
-            await ctx.reply(f"#Stable Diff: {prompt}",files=files)
+            await ctx.reply(f"# Stable Diff: {prompt}",files=files)
         await ctx.message.remove_reaction("⏳", member=bot.user)
         STABLE_QUEUE.pop(0)
 
@@ -131,9 +131,9 @@ async def stableXL(ctx : commands.Context, *, prompt : str):
                     discord.File(f, filename="image.png")
                 )
         if len(neg) > 1:
-            await ctx.reply(f"#Stable Diff XL: {neg[0]}\nnegative prompt: {neg[1]}",files=files)
+            await ctx.reply(f"# Stable Diff XL: {neg[0]}\nnegative prompt: {neg[1]}",files=files)
         else:
-            await ctx.reply(f"#Stable Diff XL: {prompt}",files=files)
+            await ctx.reply(f"# Stable Diff XL: {prompt}",files=files)
         await ctx.message.remove_reaction("⏳", member=bot.user)
         STABLE_XL_QUEUE.pop(0)
 
@@ -179,9 +179,9 @@ async def stableAu(ctx : commands.Context, *, prompt : str):
         with open(out, "rb") as f:
             file = discord.File(f, filename="video.mp4")
         if len(neg) > 1:
-            await ctx.reply(f"#Stable Audio: {neg[0]}\nnegative prompt: {neg[1]}",file=file)
+            await ctx.reply(f"# Stable Audio: {neg[0]}\nnegative prompt: {neg[1]}",file=file)
         else:
-            await ctx.reply(f"#Stable Audio: {prompt}",file=file)
+            await ctx.reply(f"# Stable Audio: {prompt}",file=file)
         await ctx.message.remove_reaction("⏳", member=bot.user)
         STABLE_AUDIO_QUEUE.pop(0)
 
@@ -282,9 +282,9 @@ async def stableMu(ctx : commands.Context, *, prompt : str):
         with open(out, "rb") as f:
             file = discord.File(f, filename="video.mp4")
         if len(neg) > 1:
-            await ctx.reply(f"#Stable Music: {neg[0]}\nnegative prompt: {neg[1]}",file=file)
+            await ctx.reply(f"# Stable Music: {neg[0]}\nnegative prompt: {neg[1]}",file=file)
         else:
-            await ctx.reply(f"#Stable Music: {prompt}",file=file)
+            await ctx.reply(f"# Stable Music: {prompt}",file=file)
         await ctx.message.remove_reaction("⏳", member=bot.user)
         STABLE_MUSIC_QUEUE.pop(0)
 
@@ -329,7 +329,7 @@ async def Dalle(ctx : commands.Context, *, prompt):
                 files.append(
                     discord.File(f, filename="image.png")
                 )
-        await ctx.reply(f"#Dalle: {prompt}",files=files)
+        await ctx.reply(f"# Dalle: {prompt}",files=files)
         await ctx.message.remove_reaction("⏳", member=bot.user)
         DALLE_QUEUE.pop(0)
 
