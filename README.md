@@ -17,4 +17,6 @@ Create a bot on the discord dev api https://discord.com/developers/applications
 
 Put your token in inc\token.txt
 
+Make sure to change the DEBUG_CHANNEL and BOT_CHANNEL to your correct channels of YOUR discord.
+
 Run main.py
