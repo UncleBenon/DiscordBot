@@ -7,6 +7,7 @@ from core.SDXL_Google import Stable_XL
 from core.budgetGPT import StableLM
 from core.audioldm import stableaudioLDM
 from asyncio import sleep
+from os import remove
 import discord
 import random
 
@@ -84,6 +85,8 @@ async def stable(ctx : commands.Context, *, prompt : str):
         else:
             await ctx.reply(f"# Stable Diff: {prompt}",files=files)
         await ctx.message.remove_reaction("⏳", member=bot.user)
+        for f in out:
+            remove(f)
         STABLE_QUEUE.pop(0)
 
 @stable.error
@@ -136,6 +139,8 @@ async def stableXL(ctx : commands.Context, *, prompt : str):
         else:
             await ctx.reply(f"# Stable Diff XL: {prompt}",files=files)
         await ctx.message.remove_reaction("⏳", member=bot.user)
+        for f in out:
+            remove(f)
         STABLE_XL_QUEUE.pop(0)
 
 @stableXL.error
@@ -184,6 +189,7 @@ async def stableAu(ctx : commands.Context, *, prompt : str):
         else:
             await ctx.reply(f"# Stable Audio: {prompt}",file=file)
         await ctx.message.remove_reaction("⏳", member=bot.user)
+        remove(out)
         STABLE_AUDIO_QUEUE.pop(0)
 
 @stableAu.error
@@ -232,6 +238,7 @@ async def stableAuldmldm(ctx : commands.Context, *, prompt : str):
         else:
             await ctx.reply(f"# Stable Audio: {prompt}",file=file)
         await ctx.message.remove_reaction("⏳", member=bot.user)
+        remove(out)
         STABLE_AUDIO_LDM_QUEUE.pop(0)
 
 @stableAuldmldm.error
@@ -335,6 +342,7 @@ async def stableMu(ctx : commands.Context, *, prompt : str):
         else:
             await ctx.reply(f"# Stable Music: {prompt}",file=file)
         await ctx.message.remove_reaction("⏳", member=bot.user)
+        remove(out)
         STABLE_MUSIC_QUEUE.pop(0)
 
 @stableMu.error
@@ -380,6 +388,8 @@ async def Dalle(ctx : commands.Context, *, prompt):
                 )
         await ctx.reply(f"# Dalle: {prompt}",files=files)
         await ctx.message.remove_reaction("⏳", member=bot.user)
+        for f in out:
+            remove(f)
         DALLE_QUEUE.pop(0)
 
 @Dalle.error
@@ -442,37 +452,6 @@ async def TokenPrice(ctx : commands.Context):
         embed.add_field(name="Classic:", value=f":coin: {tprice[3]}", inline=True)
         await ctx.send(embed=embed)
         await ctx.message.remove_reaction("⏳", member=bot.user)
-
-@bot.command(aliases=['alli'])
-async def AllImages(ctx : commands.Context, *, prompt):
-    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the All Images command")
-    print(f"{curTime()}  -  {ctx.author} used the All Images command")
-    Dalle(ctx, prompt)
-    stable(ctx, prompt)
-    stableXL(ctx, prompt)
-
-@AllImages.error
-async def alli_error(ctx, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        if not await CheckChannel(ctx):
-            return
-        await ctx.reply("Forgot a prompt there buddy", delete_after=15)
-        await ctx.message.delete(delay=15)
-        
-@bot.command(aliases=['alls'])
-async def AllSound(ctx : commands.Context, *, prompt):
-    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the All Sound command")
-    print(f"{curTime()}  -  {ctx.author} used the All Sound command")
-    stableAu(ctx, prompt)
-    stableMu(ctx, prompt)
-
-@AllSound.error
-async def allm_error(ctx, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        if not await CheckChannel(ctx):
-            return
-        await ctx.reply("Forgot a prompt there buddy", delete_after=15)
-        await ctx.message.delete(delay=15)
 
 @bot.command(aliases=['8ball'])
 async def eightball(ctx : commands.Context): # Generic 8ball that literally every bot has.
