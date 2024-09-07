@@ -1,12 +1,12 @@
 from playwright.async_api import async_playwright 
-from asyncio import sleep, run
+from asyncio import sleep
 from core.sha import getSha256
 from random import randrange
 import requests
 import os
 
 STABLE_AUDIO_PATH = 'temp'
-async def stableaudioLDM(prompt : str, neg : str = None, debug = False) -> list[str]:
+async def stableaudioLDM(prompt : str, neg : str = None, debug = False) -> str:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()

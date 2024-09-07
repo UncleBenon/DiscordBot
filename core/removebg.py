@@ -1,7 +1,7 @@
 from playwright.async_api import async_playwright
 from hashlib import sha256
 from requests import get
-from asyncio import (run, sleep)
+from asyncio import sleep
 import os
 
 RMBG_PATH = "temp"

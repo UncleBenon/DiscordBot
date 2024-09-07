@@ -1,5 +1,5 @@
 from playwright.async_api import async_playwright 
-from asyncio import sleep, run
+from asyncio import sleep
 from core.sha import getSha256
 import base64
 import os

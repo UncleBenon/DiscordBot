@@ -1,5 +1,5 @@
 from playwright.async_api import async_playwright 
-from asyncio import sleep, run
+from asyncio import sleep
 from random import randrange
 import base64
 import os
@@ -47,7 +47,7 @@ async def stableDiff(prompt : str, neg : str = None, debug : bool = False) -> li
                 out.append(fullPath)
         return out
 
-async def stableAudio(prompt : str, neg : str = None, debug = False) -> list[str]:
+async def stableAudio(prompt : str, neg : str = None, debug = False) -> str:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
@@ -89,7 +89,7 @@ async def stableAudio(prompt : str, neg : str = None, debug = False) -> list[str
         f.write(content.content)
     return fullPath
 
-async def stableMusic(prompt : str, neg : str = None, debug = False) -> list[str]:
+async def stableMusic(prompt : str, neg : str = None, debug = False) -> str:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()

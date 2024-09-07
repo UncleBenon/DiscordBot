@@ -1,5 +1,5 @@
 from playwright.async_api import async_playwright 
-from asyncio import sleep, run
+from asyncio import sleep
 
 async def StableLM(prompt : str, DEBUG : bool = False) -> str:
     async with async_playwright() as p:

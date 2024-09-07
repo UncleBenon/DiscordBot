@@ -265,7 +265,168 @@ async def VidGen(ctx : commands.Context) -> None:
         remove(out)
         VIDGEN_QUEUE.pop(0)
 
+STABLE_AUDIO_QUEUE = []
+@bot.command(aliases=['vg'])
+async def StableAudio(ctx : commands.Context) -> None:
+    if not await CheckChannel(ctx):
+        return
 
+    global STABLE_AUDIO_QUEUE
+
+    prompt = ctx.message.content.split(' ')
+    prompt = prompt[1:]
+
+    if len(prompt) < 1:
+        ctx.reply("Need a prompt buddy!")
+        return
+
+    stored_prompt = getSha256(prompt)
+    STABLE_AUDIO_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Stable Audio command")
+    print(f"{curTime()}  -  {ctx.author} used the Stable Audio command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(STABLE_AUDIO_QUEUE) > 1: 
+        if stored_prompt == STABLE_AUDIO_QUEUE[0]:
+            break
+        await sleep(1)
+
+    _prompt = ''
+    _neg = ''
+    _addNeg = False
+    for word in prompt:
+        if word.lower() == '!neg':
+            _addNeg = True
+            continue
+        if _addNeg:
+            _neg += f'{word} '
+        else:
+            _prompt += f'{word} '
+
+    try:
+        out = await stableAudio(_prompt, _neg)
+    except Exception as e:
+        STABLE_AUDIO_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        with open(out, "rb") as f:
+            file = discord.File(f, filename="video.mp4")
+            await ctx.reply(f"# Stable Audio: {_prompt}",file=file)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        remove(out)
+        STABLE_AUDIO_QUEUE.pop(0)
+
+STABLE_MUSIC_QUEUE = []
+@bot.command(aliases=['vg'])
+async def StableMusic(ctx : commands.Context) -> None:
+    if not await CheckChannel(ctx):
+        return
+
+    global STABLE_MUSIC_QUEUE
+
+    prompt = ctx.message.content.split(' ')
+    prompt = prompt[1:]
+
+    if len(prompt) < 1:
+        ctx.reply("Need a prompt buddy!")
+        return
+
+    stored_prompt = getSha256(prompt)
+    STABLE_MUSIC_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Stable Music command")
+    print(f"{curTime()}  -  {ctx.author} used the Stable Music command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(STABLE_MUSIC_QUEUE) > 1: 
+        if stored_prompt == STABLE_MUSIC_QUEUE[0]:
+            break
+        await sleep(1)
+
+    _prompt = ''
+    _neg = ''
+    _addNeg = False
+    for word in prompt:
+        if word.lower() == '!neg':
+            _addNeg = True
+            continue
+        if _addNeg:
+            _neg += f'{word} '
+        else:
+            _prompt += f'{word} '
+
+    try:
+        out = await stableMusic(_prompt, _neg)
+    except Exception as e:
+        STABLE_MUSIC_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        with open(out, "rb") as f:
+            file = discord.File(f, filename="video.mp4")
+            await ctx.reply(f"# Stable Music: {_prompt}",file=file)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        remove(out)
+        STABLE_MUSIC_QUEUE.pop(0)
+
+
+
+@bot.command(aliases=['bond', 'bp'])
+async def bondprice(ctx : commands.Context):
+    if not await CheckChannel(ctx):
+        return
+    
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Bond Price (OSRS) command")
+    print(f"{curTime()}  -  {ctx.author} used the Bond Price (OSRS) command")
+    await ctx.message.add_reaction("⏳")
+
+    try:
+        sellPrice, buyPrice = await getBondPriceOSRS()
+    except Exception as e:
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        embed=discord.Embed(title="Old School RuneScape current bond prices", url="https://prices.runescape.wiki/osrs/item/13190", description="Current bond prices directly off the wiki!", color=0xf5c211)
+        embed.set_thumbnail(url="https://oldschool.runescape.wiki/images/Old_school_bond_detail.png")
+        embed.add_field(name="Sell Price: ", value=f":coin: {sellPrice}", inline=False)
+        embed.add_field(name="Buy Price: ", value=f":coin: {buyPrice}", inline=False)
+        await ctx.reply(embed=embed)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+
+@bot.command(aliases=['tp', 'tokenprice'])
+async def TokenPrice(ctx : commands.Context):
+    if not await CheckChannel(ctx):
+        return
+    
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Token Price command")
+    print(f"{curTime()}  -  {ctx.author} used the Token Price command")
+    await ctx.message.add_reaction("⏳")
+
+    try:
+        tprice = await getWoWTokenPrice()
+    except Exception as e:
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        embed=discord.Embed(title="World of Warcraft Token Prices", url="https://wowauction.us", description="Current WoW Token prices directly off WoW Auction", color=0xf5c211)
+        embed.set_thumbnail(url="https://wow.zamimg.com/images/wow/icons/large/wow_token01.jpg")
+        embed.add_field(name="North America:", value="", inline=False)
+        embed.add_field(name="Retail:", value=f":coin: {tprice[0]}", inline=True)
+        embed.add_field(name="Classic:", value=f":coin: {tprice[2]}", inline=True)
+        embed.add_field(name="", value="---", inline=False)
+        embed.add_field(name="Europe:", value="", inline=False)
+        embed.add_field(name="Retail:", value=f":coin: {tprice[1]}", inline=True)
+        embed.add_field(name="Classic:", value=f":coin: {tprice[3]}", inline=True)
+        await ctx.reply(embed=embed)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:

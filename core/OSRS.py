@@ -1,5 +1,4 @@
 from playwright.async_api import async_playwright 
-from asyncio import run
 
 async def getBondPriceOSRS(debug : bool = False) -> tuple[str,str]:
     async with async_playwright() as p:

@@ -1,5 +1,4 @@
 from playwright.async_api import async_playwright 
-from asyncio import run
 
 async def getWoWTokenPrice(debug : bool = False) -> tuple[str, str, str, str]:
     # https://wowauction.us

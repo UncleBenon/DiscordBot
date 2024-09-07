@@ -1,6 +1,7 @@
+from hashlib import sha256
+from time import time
+
 def getSha256(items) -> str:
-    from hashlib import sha256
-    from time import time
 
     out = sha256()
 
