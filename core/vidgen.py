@@ -4,7 +4,7 @@ from requests import get
 from asyncio import (run, sleep)
 import os
 
-RMBG_PATH = "RMBG"
+RMBG_PATH = "temp"
 async def sdVidGenFunction(prompt : str, DEBUG = False):
     # Makes the folder if it doesn't exist.
     if not os.path.exists(RMBG_PATH):
@@ -27,8 +27,10 @@ async def sdVidGenFunction(prompt : str, DEBUG = False):
         while not await found.is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 60:
+            if _cc >= 120:
                 raise Exception("Timed Out")
+            if await page.get_by_text("Error").first.is_visible():
+                raise Exception("Error!")
 
         link = await found.get_attribute("src")
 

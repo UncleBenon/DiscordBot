@@ -1,10 +1,10 @@
 from playwright.async_api import async_playwright 
 from asyncio import sleep, run
-from core.CORE import curTime
+from core.sha import getSha256
 import base64
 import os
 
-DALLE_PATH = 'DALLE_IMAGES'
+DALLE_PATH = 'temp'
 async def dalle(prompt, debug = False) -> list[str]:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
@@ -19,6 +19,8 @@ async def dalle(prompt, debug = False) -> list[str]:
             _cc += 1
             if _cc >= 120:
                 raise Exception("Timed out")
+            if await page.get_by_text("Error").first.is_visible():
+                raise Exception("Error!")
 
         imgs = await page.locator(".gallery-item").all()
 
@@ -32,8 +34,8 @@ async def dalle(prompt, debug = False) -> list[str]:
             )
 
         out = []
-        for i, img in enumerate(b64):
-            filename = f"{curTime()}-{i}.png"
+        for img in b64:
+            filename = f"{getSha256(img)}.png"
             fullPath = os.path.join(DALLE_PATH, filename)
             if not os.path.exists(DALLE_PATH):
                 os.mkdir(DALLE_PATH)

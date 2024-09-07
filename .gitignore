@@ -1,13 +1,6 @@
-.venv/
+.venv
 token.txt
 .git
 __pycache__
-STABLE_IMAGES
-STABLE_MUSIC
-STABLE_AUDIO
-DALLE_IMAGES
-STABLE_XL_IMAGES
-STABLE_AUDIO_LDM
-FB_AUDIO
+temp
 start.sh
-RMBG

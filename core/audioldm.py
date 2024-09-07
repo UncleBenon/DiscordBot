@@ -1,15 +1,11 @@
 from playwright.async_api import async_playwright 
 from asyncio import sleep, run
-from datetime import datetime
+from core.sha import getSha256
 from random import randrange
 import requests
 import os
 
-def curTime() -> str:
-        now = datetime.now()
-        return str(now.strftime("%d-%m-%y %I-%M-%S %p"))
-
-STABLE_AUDIO_PATH = 'STABLE_AUDIO_LDM'
+STABLE_AUDIO_PATH = 'temp'
 async def stableaudioLDM(prompt : str, neg : str = None, debug = False) -> list[str]:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
@@ -37,11 +33,13 @@ async def stableaudioLDM(prompt : str, neg : str = None, debug = False) -> list[
             _cc += 1
             if _cc >= 90:
                 raise Exception("timed out")
+            if await page.get_by_text("Error").first.is_visible():
+                raise Exception("Error!")
 
         link = await page.get_by_test_id("Output-player").get_attribute("src")
 
     content = requests.get(link)
-    filename = f"{curTime()}.mp4"
+    filename = f"{getSha256(content)}.mp4"
     fullPath = os.path.join(STABLE_AUDIO_PATH, filename)
     if not os.path.exists(STABLE_AUDIO_PATH):
         os.mkdir(STABLE_AUDIO_PATH)

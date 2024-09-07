@@ -4,7 +4,7 @@ from requests import get
 from asyncio import (run, sleep)
 import os
 
-RMBG_PATH = "RMBG"
+RMBG_PATH = "temp"
 async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
     # Makes the folder if it doesn't exist.
     if not os.path.exists(RMBG_PATH):
@@ -42,6 +42,8 @@ async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
             _cc += 1
             if _cc >= 300:
                 raise Exception("Timed Out")
+            if await page.get_by_text("Error").first.is_visible():
+                raise Exception("Error!")
 
         img = await link.get_attribute("href")
 

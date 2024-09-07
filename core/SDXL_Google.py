@@ -1,10 +1,10 @@
 from playwright.async_api import async_playwright 
 from asyncio import sleep, run
-from core.CORE import curTime
+from core.sha import getSha256
 import base64
 import os
 
-PATH = "STABLE_XL_IMAGES"
+PATH = "temp"
 async def Stable_XL(prompt : str, negPrompt : str = None, debug : bool = False) -> list[str]:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
@@ -39,8 +39,8 @@ async def Stable_XL(prompt : str, negPrompt : str = None, debug : bool = False) 
                 )
 
         out = []
-        for i, img in enumerate(b64):
-            filename = f"{curTime()}-{i}.png"
+        for img in b64:
+            filename = f"{getSha256(img)}.png"
             fullPath = os.path.join(PATH, filename)
             if not os.path.exists(PATH):
                 os.mkdir(PATH)

@@ -1,16 +1,12 @@
 from playwright.async_api import async_playwright 
 from asyncio import sleep, run
-from datetime import datetime
 from random import randrange
 import base64
 import os
 import requests
+from core.sha import getSha256
 
-def curTime() -> str:
-        now = datetime.now()
-        return str(now.strftime("%d-%m-%y %I-%M-%S %p"))
-
-PATH = "STABLE_IMAGES"
+PATH = "temp"
 async def stableDiff(prompt : str, neg : str = None, debug : bool = False) -> list[str]:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
@@ -27,6 +23,8 @@ async def stableDiff(prompt : str, neg : str = None, debug : bool = False) -> li
             _cc += 1
             if _cc >= 120:
                 raise Exception("timed out")
+            if await page.get_by_text("Error").first.is_visible():
+                raise Exception("Error!")
         imgs = await page.query_selector_all('img')
         b64 = []
         for found in imgs:
@@ -39,8 +37,8 @@ async def stableDiff(prompt : str, neg : str = None, debug : bool = False) -> li
                 )
             )
         out = []
-        for i, img in enumerate(b64):
-            filename = f"{curTime()}-{i}.png"
+        for img in b64:
+            filename = f"{getSha256(img)}.png"
             fullPath = os.path.join(PATH, filename)
             if not os.path.exists(PATH):
                 os.mkdir(PATH)
@@ -49,7 +47,6 @@ async def stableDiff(prompt : str, neg : str = None, debug : bool = False) -> li
                 out.append(fullPath)
         return out
 
-STABLE_AUDIO_PATH = 'STABLE_AUDIO'
 async def stableAudio(prompt : str, neg : str = None, debug = False) -> list[str]:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
@@ -76,21 +73,22 @@ async def stableAudio(prompt : str, neg : str = None, debug = False) -> list[str
         while not await found.is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 90:
+            if _cc >= 120:
                 raise Exception("timed out")
+            if await page.get_by_text("Error").first.is_visible():
+                raise Exception("Error!")
 
         link = await page.get_by_test_id("Output-player").get_attribute("src")
 
     content = requests.get(link)
-    filename = f"{curTime()}.mp4"
-    fullPath = os.path.join(STABLE_AUDIO_PATH, filename)
-    if not os.path.exists(STABLE_AUDIO_PATH):
-        os.mkdir(STABLE_AUDIO_PATH)
+    filename = f"{getSha256(content)}.mp4"
+    fullPath = os.path.join(PATH, filename)
+    if not os.path.exists(PATH):
+        os.mkdir(PATH)
     with open(fullPath,"wb") as f:
         f.write(content.content)
     return fullPath
 
-STABLE_MUSIC_PATH = 'STABLE_MUSIC'
 async def stableMusic(prompt : str, neg : str = None, debug = False) -> list[str]:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
@@ -101,17 +99,11 @@ async def stableMusic(prompt : str, neg : str = None, debug = False) -> list[str
         while await page.get_by_text("Preparing Space").is_visible():
             await sleep(10)
             await page.goto("https://haoheliu-audioldm2-text2audio-text2music.hf.space")
-        #await page.get_by_label("Input text Your text is").click()
-        #await page.get_by_label("Input text Your text is").press("ControlOrMeta+a")
         await page.get_by_label("Input text Your text is").fill(prompt)
-        #await page.get_by_label("Negative prompt Enter a").click()
-        #await page.get_by_label("Negative prompt Enter a").press("ControlOrMeta+a")
         if neg:
             await page.get_by_label("Negative prompt Enter a").fill(neg)
         await page.get_by_text("Click to modify detailed configurations ▼").click()
-        #await page.get_by_label("Seed Change this value (any").click()
         await page.get_by_label("Seed Change this value (any").fill(f"{randrange(0,99999999)}")
-        #await page.locator("#component-9").get_by_test_id("number-input").click()
         await page.locator("#component-9").get_by_test_id("number-input").fill(str(15))
         await page.get_by_role("button", name="Submit").click()
         _cc = 0
@@ -120,13 +112,15 @@ async def stableMusic(prompt : str, neg : str = None, debug = False) -> list[str
             _cc +=1
             if _cc >= 120:
                 raise Exception("timed out")
+            if await page.get_by_text("Error").first.is_visible():
+                raise Exception("Error!")
         link = await page.get_by_test_id("Output-player").get_attribute("src")
 
     content = requests.get(link)
-    filename = f"{curTime()}.mp4"
-    fullPath = os.path.join(STABLE_MUSIC_PATH, filename)
-    if not os.path.exists(STABLE_MUSIC_PATH):
-        os.mkdir(STABLE_MUSIC_PATH)
+    filename = f"{getSha256(content)}.mp4"
+    fullPath = os.path.join(PATH, filename)
+    if not os.path.exists(PATH):
+        os.mkdir(PATH)
     with open(fullPath,"wb") as f:
         f.write(content.content)
     return fullPath
