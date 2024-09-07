@@ -548,9 +548,9 @@ async def removeBg(ctx : commands.Context):
             await ctx.reply(e)
             continue
 
-    async with ctx.typing():
-        files = []
-        if len(out) > 0:
+    if len(out) > 0:
+        async with ctx.typing():
+            files = []
             for file in out:
                 with open(file, "rb") as f:
                     files.append(
@@ -559,8 +559,8 @@ async def removeBg(ctx : commands.Context):
             await ctx.reply("# Removed Background:", files=files)
             for file in out:
                 remove(file)
-        await ctx.message.remove_reaction("⏳", member=bot.user)
-        RBG_QUEUE.pop(0)
+    await ctx.message.remove_reaction("⏳", member=bot.user)
+    RBG_QUEUE.pop(0)
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
