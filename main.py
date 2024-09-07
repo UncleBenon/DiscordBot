@@ -63,6 +63,7 @@ async def StableDiff(ctx : commands.Context) -> None:
 
     if len(prompt) < 1:
         ctx.reply("Need a prompt buddy!")
+        return
 
     stored_prompt = getSha256(prompt)
     STABLE_QUEUE.append(stored_prompt)
@@ -121,6 +122,7 @@ async def StableDiffXL(ctx : commands.Context) -> None:
 
     if len(prompt) < 1:
         ctx.reply("Need a prompt buddy!")
+        return
 
     stored_prompt = getSha256(prompt)
     STABLE_QUEUE_XL.append(stored_prompt)
@@ -165,6 +167,103 @@ async def StableDiffXL(ctx : commands.Context) -> None:
         for f in out:
             remove(f)
         STABLE_QUEUE_XL.pop(0)
+
+DALLE_QUEUE = []
+@bot.command(aliases=['dalle'])
+async def Dalle(ctx : commands.Context) -> None:
+    if not await CheckChannel(ctx):
+        return
+
+    global DALLE_QUEUE
+
+    prompt = ctx.message.content.split(' ')
+    prompt = prompt[1:]
+
+    if len(prompt) < 1:
+        ctx.reply("Need a prompt buddy!")
+        return
+
+    stored_prompt = getSha256(prompt)
+    DALLE_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Dalle command")
+    print(f"{curTime()}  -  {ctx.author} used the Dalle command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(DALLE_QUEUE) > 1: 
+        if stored_prompt == DALLE_QUEUE[0]:
+            break
+        await sleep(1)
+
+    _prompt = ''
+    for word in prompt:
+        _prompt += f'{word} '
+
+    try:
+        out = await dalle(_prompt)
+    except Exception as e:
+        DALLE_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        files: list[discord.File] = []
+        for file in out:
+            with open(file, "rb") as f:
+                files.append(
+                    discord.File(f, filename="image.png")
+                )
+        await ctx.reply(f"# Dalle: {_prompt}",files=files)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        for f in out:
+            remove(f)
+        DALLE_QUEUE.pop(0)
+
+VIDGEN_QUEUE = []
+@bot.command(aliases=['vg'])
+async def VidGen(ctx : commands.Context) -> None:
+    if not await CheckChannel(ctx):
+        return
+
+    global VIDGEN_QUEUE
+
+    prompt = ctx.message.content.split(' ')
+    prompt = prompt[1:]
+
+    if len(prompt) < 1:
+        ctx.reply("Need a prompt buddy!")
+        return
+
+    stored_prompt = getSha256(prompt)
+    VIDGEN_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Video Gen command")
+    print(f"{curTime()}  -  {ctx.author} used the Video Gen command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(VIDGEN_QUEUE) > 1: 
+        if stored_prompt == VIDGEN_QUEUE[0]:
+            break
+        await sleep(1)
+
+    _prompt = ''
+    for word in prompt:
+        _prompt += f'{word} '
+
+    try:
+        out = await sdVidGenFunction(_prompt)
+    except Exception as e:
+        VIDGEN_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        with open(out, "rb") as f:
+            file = discord.File(f, filename="video.mp4")
+            await ctx.reply(f"# Video Gen: {_prompt}",file=file)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        remove(out)
+        VIDGEN_QUEUE.pop(0)
 
 
 
