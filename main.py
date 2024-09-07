@@ -373,6 +373,55 @@ async def StableMusic(ctx : commands.Context) -> None:
         remove(out)
         STABLE_MUSIC_QUEUE.pop(0)
 
+RBG_QUEUE = []
+@bot.command(aliases=["rbg"])
+async def removeBg(ctx : commands.Context):
+    if not await CheckChannel(ctx):
+        return
+    global RBG_QUEUE
+    attachments = ctx.message.attachments
+    if len(attachments) < 1:
+        _msg = ctx.message.content.split(" ")
+        _msg = _msg[1:] 
+        attachments = [msg for msg in _msg if msg.startswith("https")]
+        if len(attachments) < 1:
+            await ctx.reply("need at least 1 image.")
+            return
+    stored_prompt = getSha256(str(ctx.author).encode())
+    RBG_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Remove Background command")
+    print(f"{curTime()}  -  {ctx.author} used the Remove Background command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(RBG_QUEUE) > 1: 
+        if stored_prompt == RBG_QUEUE[0]:
+            break
+        await sleep(0.5)
+
+    out = []
+    for file in attachments:
+        try:
+            if isinstance(file, str):
+                out.append(await RemoveBackGroundFunction(file))
+            else:
+                out.append(await RemoveBackGroundFunction(file.url))
+        except Exception as e:
+            await ctx.reply(e)
+            continue
+
+    if len(out) > 0:
+        async with ctx.typing():
+            files = []
+            for file in out:
+                with open(file, "rb") as f:
+                    files.append(
+                        discord.File(f, filename="image.png")
+                    )
+            await ctx.reply("# Removed Background:", files=files)
+            for file in out:
+                remove(file)
+    await ctx.message.remove_reaction("⏳", member=bot.user)
+ 
 
 
 @bot.command(aliases=['bond', 'bp'])
