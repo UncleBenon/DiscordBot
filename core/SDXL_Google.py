@@ -1,6 +1,6 @@
 from playwright.async_api import async_playwright 
 from asyncio import sleep, run
-from CORE import curTime
+from core.CORE import curTime
 import base64
 import os
 
