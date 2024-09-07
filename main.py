@@ -266,7 +266,7 @@ async def VidGen(ctx : commands.Context) -> None:
         VIDGEN_QUEUE.pop(0)
 
 STABLE_AUDIO_QUEUE = []
-@bot.command(aliases=['vg'])
+@bot.command(aliases=['sa'])
 async def StableAudio(ctx : commands.Context) -> None:
     if not await CheckChannel(ctx):
         return
@@ -320,7 +320,7 @@ async def StableAudio(ctx : commands.Context) -> None:
         STABLE_AUDIO_QUEUE.pop(0)
 
 STABLE_MUSIC_QUEUE = []
-@bot.command(aliases=['vg'])
+@bot.command(aliases=['sm'])
 async def StableMusic(ctx : commands.Context) -> None:
     if not await CheckChannel(ctx):
         return
