@@ -7,3 +7,5 @@ Make sure to install the reqs.txt with pip, after that make sure to install Play
 https://playwright.dev/python/docs/intro
 
 test.py tests all the Playwright functions.
+
+Highly recommend using a Venv
