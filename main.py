@@ -5,6 +5,7 @@ from core.OSRS import getBondPriceOSRS
 from core.WoW import getWoWTokenPrice
 from core.SDXL_Google import Stable_XL
 from core.budgetGPT import StableLM
+from core.audioldm import stableaudioLDM
 from asyncio import sleep
 import discord
 import random
@@ -214,9 +215,9 @@ async def stableAuldmldm(ctx : commands.Context, *, prompt : str):
 
     try:
         if len(neg) > 1:
-            out = await stableAudio(neg[0], neg[1])
+            out = await stableaudioLDM(neg[0], neg[1])
         else:
-            out = await stableAudio(prompt)
+            out = await stableaudioLDM(prompt)
     except Exception as e:
         STABLE_AUDIO_LDM_QUEUE.pop(0)
         await ctx.reply(e)
