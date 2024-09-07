@@ -1,6 +1,6 @@
 from playwright.async_api import async_playwright 
 from asyncio import sleep, run
-from core.CORE import curTime
+from CORE import curTime
 import base64
 import os
 
@@ -23,6 +23,8 @@ async def Stable_XL(prompt : str, negPrompt : str = None, debug : bool = False) 
             _cc += 1
             if _cc >= 120:
                 raise Exception("Timed out")
+            if await page.get_by_text("Error").first.is_visible():
+                raise Exception("Please try again with a different prompt\nRemember, it's Google. No Naughty words!")
 
         imgs = await page.query_selector_all('img')
 
@@ -49,5 +51,5 @@ async def Stable_XL(prompt : str, negPrompt : str = None, debug : bool = False) 
 
 
 if __name__ == '__main__':
-    test = run(Stable_XL("Boris Johnson meets Harambe", debug=True))
+    test = run(Stable_XL("ass", debug=True))
     print(test)
