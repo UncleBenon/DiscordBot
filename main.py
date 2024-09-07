@@ -7,6 +7,7 @@ from core.SDXL_Google import Stable_XL
 from core.budgetGPT import StableLM
 from core.audioldm import stableaudioLDM
 from core.sha import getSha256
+from core.removebg import RemoveBackGroundFunction
 from asyncio import sleep
 from os import remove
 import discord
@@ -510,6 +511,53 @@ async def fb_error(ctx, error):
             return
         await ctx.reply("Forgot a prompt there buddy", delete_after=15)
         await ctx.message.delete(delay=15)
+
+RBG_QUEUE = []
+@bot.command(aliases=["rbg"])
+async def removeBg(ctx : commands.Context, *, prompt : str):
+    if not await CheckChannel(ctx):
+        return
+    global RBG_QUEUE
+    stored_prompt = getSha256(prompt)
+    RBG_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Remove Background command")
+    print(f"{curTime()}  -  {ctx.author} used the Remove Background command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(RBG_QUEUE) > 1: 
+        if stored_prompt == RBG_QUEUE[0]:
+            break
+        await sleep(0.5)
+
+    try:
+        out = await RemoveBackGroundFunction(prompt)
+    except Exception as e:
+        RBG_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        with open(out, "rb") as f:
+            file = discord.File(f, filename="image.png")
+        await ctx.reply("# Removed Background:",file=file)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        remove(out)
+        RBG_QUEUE.pop(0)
+
+
+@removeBg.error
+async def rmbg_error(ctx : commands.Context, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        if not await CheckChannel(ctx):
+            return
+
+        files = ctx.message.attachments
+        if len(files) < 1:
+            await ctx.reply("need an image fam.")
+            return
+        for file in files:
+            await removeBg(ctx, prompt=file.url)
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
