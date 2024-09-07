@@ -72,4 +72,4 @@ def runTests(debug : bool = False):
         print("GPT failed")
 
 if __name__ == "__main__":
-    runTests()
+    runTests(True)

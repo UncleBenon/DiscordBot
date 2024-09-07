@@ -21,7 +21,3 @@ async def getWoWTokenPrice(debug : bool = False) -> tuple[str, str, str, str]:
         classicEU = classicEU.splitlines()[2].strip()
 
         return (retailNA, retailEU, classicNA, classicEU)
-
-
-if __name__ == "__main__":
-    run(getWoWTokenPrice())

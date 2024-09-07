@@ -62,7 +62,3 @@ async def downloadImage(url) -> str:
     with open(fullPath, 'wb') as f:
         f.write(file)
     return file, fullPath
-
-if __name__ == "__main__":
-    test = run(RemoveBackGroundFunction("https://media.discordapp.net/attachments/1048600881593061416/1275503857908187156/image.png?ex=66d3f8c9&is=66d2a749&hm=dee4b854ae730254bf074c708e999ee07d938cbb2b5b99db565f5754852e2644", False))
-    print(test)

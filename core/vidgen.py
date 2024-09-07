@@ -45,10 +45,3 @@ async def sdVidGenFunction(prompt : str, DEBUG = False):
         f.write(file)
 
     return fullPath
-
-if __name__ == "__main__":
-    test = run(
-        sdVidGenFunction("Boris Johnson running", True)
-    )
-
-    print(test)

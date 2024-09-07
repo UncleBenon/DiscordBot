@@ -46,7 +46,3 @@ async def stableaudioLDM(prompt : str, neg : str = None, debug = False) -> list[
     with open(fullPath,"wb") as f:
         f.write(content.content)
     return fullPath
-
-if __name__ == '__main__':
-    test = run(stableaudioLDM("Racism+500", debug=True))
-    print(test)

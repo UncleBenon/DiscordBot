@@ -29,14 +29,3 @@ async def StableLM(prompt : str, DEBUG : bool = False) -> str:
         out = out.strip("bot's message: ")
 
         return out.split('\n') if len(out) >= 2000 else out
-
-
-if __name__ == "__main__":
-    test = run(
-        StableLM(
-            "write me an expansion idea for Final Fantasy XIV involving potatos"
-        )
-    )
-    if isinstance(test, list):
-        for line in test:
-            print(line)

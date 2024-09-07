@@ -48,8 +48,3 @@ async def Stable_XL(prompt : str, negPrompt : str = None, debug : bool = False) 
                 f.write(img)
                 out.append(fullPath)
         return out
-
-
-if __name__ == '__main__':
-    test = run(Stable_XL("ass", debug=True))
-    print(test)

@@ -16,8 +16,3 @@ def getSha256(items) -> str:
 
     out.update(str(time()).encode())
     return out.hexdigest()
-
-if __name__ == "__main__":
-    print(
-        getSha256(("test", "lmao"))
-    )

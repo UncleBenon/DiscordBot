@@ -11,7 +11,3 @@ async def getBondPriceOSRS(debug : bool = False) -> tuple[str,str]:
         buyPrice = buyPrice.strip('?').strip(" Buy price: ").strip(" coins")
         sellPrice = sellPrice.strip('?').strip(" Sell price: ").strip(" coins")
         return (sellPrice, buyPrice)
-
-
-if __name__ == "__main__":
-    run(getBondPriceOSRS())

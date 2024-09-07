@@ -43,6 +43,3 @@ async def dalle(prompt, debug = False) -> list[str]:
                 f.write(img)
                 out.append(fullPath)
         return out
-
-if __name__ == "__main__":
-    run(dalle("abdul akir zimbabwae"))
