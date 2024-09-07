@@ -514,11 +514,19 @@ async def fb_error(ctx, error):
 
 RBG_QUEUE = []
 @bot.command(aliases=["rbg"])
-async def removeBg(ctx : commands.Context, *, prompt : str):
+async def removeBg(ctx : commands.Context):
     if not await CheckChannel(ctx):
         return
     global RBG_QUEUE
-    stored_prompt = getSha256(prompt)
+    attachments = ctx.message.attachments
+    if len(attachments) < 1:
+        _msg = ctx.message.content.split(" ")
+        _msg = _msg[1:] 
+        attachments = [msg for msg in _msg if msg.startswith("https")]
+        if len(attachments) < 1:
+            await ctx.reply("need at least 1 image.")
+            return
+    stored_prompt = getSha256(str(ctx.author).encode())
     RBG_QUEUE.append(stored_prompt)
     await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Remove Background command")
     print(f"{curTime()}  -  {ctx.author} used the Remove Background command")
@@ -529,35 +537,30 @@ async def removeBg(ctx : commands.Context, *, prompt : str):
             break
         await sleep(0.5)
 
-    try:
-        out = await RemoveBackGroundFunction(prompt)
-    except Exception as e:
-        RBG_QUEUE.pop(0)
-        await ctx.reply(e)
-        await ctx.message.remove_reaction("⏳", member=bot.user)
-        return
+    out = []
+    for file in attachments:
+        try:
+            if isinstance(file, str):
+                out.append(await RemoveBackGroundFunction(file))
+            else:
+                out.append(await RemoveBackGroundFunction(file.url))
+        except Exception as e:
+            await ctx.reply(e)
+            continue
 
     async with ctx.typing():
-        with open(out, "rb") as f:
-            file = discord.File(f, filename="image.png")
-        await ctx.reply("# Removed Background:",file=file)
+        files = []
+        if len(out) > 0:
+            for file in out:
+                with open(file, "rb") as f:
+                    files.append(
+                        discord.File(f, filename="image.png")
+                    )
+            await ctx.reply("# Removed Background:", files=files)
+            for file in out:
+                remove(file)
         await ctx.message.remove_reaction("⏳", member=bot.user)
-        remove(out)
         RBG_QUEUE.pop(0)
-
-
-@removeBg.error
-async def rmbg_error(ctx : commands.Context, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        if not await CheckChannel(ctx):
-            return
-
-        files = ctx.message.attachments
-        if len(files) < 1:
-            await ctx.reply("need an image fam.")
-            return
-        for file in files:
-            await removeBg(ctx, prompt=file.url)
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:

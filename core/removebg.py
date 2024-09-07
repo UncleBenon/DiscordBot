@@ -10,9 +10,6 @@ async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
     if not os.path.exists(RMBG_PATH):
         os.mkdir(RMBG_PATH)
 
-    if not inp.startswith("http"):
-        raise Exception("Invalid Url")
-
     _, inp = await downloadImage(inp)
 
     async with async_playwright() as p:
@@ -54,7 +51,10 @@ async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
     return fullPath
 
 async def downloadImage(url) -> str:
-    file = get(url).content
+    inpt = get(url)
+    if inpt.status_code != 200:
+        raise Exception(f"Dead link {url}")
+    file = inpt.content
     filename = f"{sha256(file).hexdigest()}.png"
     fullPath = os.path.join(RMBG_PATH, filename)
     with open(fullPath, 'wb') as f:
