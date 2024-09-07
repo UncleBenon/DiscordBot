@@ -8,6 +8,7 @@ from core.budgetGPT import StableLM
 from core.audioldm import stableaudioLDM
 from core.sha import getSha256
 from core.removebg import RemoveBackGroundFunction
+from core.vidgen import sdVidGenFunction
 from asyncio import sleep
 from os import remove
 import discord
@@ -561,6 +562,47 @@ async def removeBg(ctx : commands.Context):
                 remove(file)
     await ctx.message.remove_reaction("⏳", member=bot.user)
     RBG_QUEUE.pop(0)
+
+VID_GEN_QUEUE = []
+@bot.command(aliases=["vg"])
+async def VidGen(ctx : commands.Context, *, prompt : str):
+    if not await CheckChannel(ctx):
+        return
+    global VID_GEN_QUEUE
+    stored_prompt = getSha256(prompt)
+    VID_GEN_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Video Gen command")
+    print(f"{curTime()}  -  {ctx.author} used the Video Gen command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(VID_GEN_QUEUE) > 1: 
+        if stored_prompt == VID_GEN_QUEUE[0]:
+            break
+        await sleep(0.5)
+    
+    try:
+        out = await sdVidGenFunction(prompt)
+    except Exception as e:
+        VID_GEN_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        with open(out, "rb") as f:
+            file = discord.File(f, filename="video.mp4")
+        await ctx.reply(f"# Video Gen: {prompt}",file=file)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        remove(out)
+        VID_GEN_QUEUE.pop(0)
+
+@VidGen.error
+async def vg_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        if not await CheckChannel(ctx):
+            return
+        await ctx.reply("Forgot a prompt there buddy", delete_after=15)
+        await ctx.message.delete(delay=15)
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
