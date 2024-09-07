@@ -468,6 +468,47 @@ async def eightball(ctx : commands.Context): # Generic 8ball that literally ever
         ]
         await ctx.reply(random.choice(eightballresponse))
 
+FB_MUSIC_QUEUE = []
+@bot.command(aliases=["fbm"])
+async def facebookMU(ctx : commands.Context, *, prompt : str):
+    if not await CheckChannel(ctx):
+        return
+    global FB_MUSIC_QUEUE
+    stored_prompt = (prompt,curTime())
+    FB_MUSIC_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the facebook music command")
+    print(f"{curTime()}  -  {ctx.author} used the facebook music command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(FB_MUSIC_QUEUE) > 1: 
+        if stored_prompt == FB_MUSIC_QUEUE[0]:
+            break
+        await sleep(0.5)
+    
+    try:
+        out = await stableMusic(prompt)
+    except Exception as e:
+        FB_MUSIC_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        with open(out, "rb") as f:
+            file = discord.File(f, filename="video.mp4")
+        await ctx.reply(f"# Facebook Music: {prompt}",file=file)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        remove(out)
+        FB_MUSIC_QUEUE.pop(0)
+
+@facebookMU.error
+async def fb_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        if not await CheckChannel(ctx):
+            return
+        await ctx.reply("Forgot a prompt there buddy", delete_after=15)
+        await ctx.message.delete(delay=15)
+
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
         T = f.readline().strip()
