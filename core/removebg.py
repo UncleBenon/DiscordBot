@@ -10,7 +10,7 @@ async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
     if not os.path.exists(RMBG_PATH):
         os.mkdir(RMBG_PATH)
 
-    if not inp.startswith("https"):
+    if not inp.startswith("http"):
         raise Exception("Invalid Url")
 
     _, inp = await downloadImage(inp)
