@@ -55,6 +55,11 @@ async def stableAudio(prompt : str, neg : str = None, debug = False) -> list[str
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
         await page.goto("https://haoheliu-audioldm-text-to-audio-generation.hf.space/")
+        if await page.get_by_text("Your space is in error").is_visible():
+            raise Exception("Space is having errors, not the bot's fault")
+        while await page.get_by_text("Preparing Space").is_visible():
+            await sleep(10)
+            await page.goto("https://haoheliu-audioldm-text-to-audio-generation.hf.space/")
         await page.get_by_role("button", name="Click to modify detailed").click()
         await page.get_by_label("number input for Duration (").fill("")
         await page.get_by_label("number input for Duration (").fill("10")
@@ -91,6 +96,11 @@ async def stableMusic(prompt : str, neg : str = None, debug = False) -> list[str
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
         await page.goto("https://haoheliu-audioldm2-text2audio-text2music.hf.space")
+        if await page.get_by_text("Your space is in error").is_visible():
+            raise Exception("Space is having errors, not the bot's fault")
+        while await page.get_by_text("Preparing Space").is_visible():
+            await sleep(10)
+            await page.goto("https://haoheliu-audioldm2-text2audio-text2music.hf.space")
         #await page.get_by_label("Input text Your text is").click()
         #await page.get_by_label("Input text Your text is").press("ControlOrMeta+a")
         await page.get_by_label("Input text Your text is").fill(prompt)
