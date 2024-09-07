@@ -232,7 +232,7 @@ async def stableAuldmldm(ctx : commands.Context, *, prompt : str):
         else:
             await ctx.reply(f"# Stable Audio: {prompt}",file=file)
         await ctx.message.remove_reaction("⏳", member=bot.user)
-        STABLE_AUDIO_QUEUE.pop(0)
+        STABLE_AUDIO_LDM_QUEUE.pop(0)
 
 @stableAuldmldm.error
 async def sa_ldm_error(ctx, error):
