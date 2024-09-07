@@ -193,6 +193,54 @@ async def sa_error(ctx, error):
         await ctx.reply("Forgot a prompt there buddy", delete_after=15)
         await ctx.message.delete(delay=15)
 
+STABLE_AUDIO_LDM_QUEUE = []
+@bot.command(aliases=["sal"])
+async def stableAuldmldm(ctx : commands.Context, *, prompt : str):
+    if not await CheckChannel(ctx):
+        return
+    global STABLE_AUDIO_LDM_QUEUE
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the stable audio command")
+    print(f"{curTime()}  -  {ctx.author} used the stable audio command")
+    stored_prompt = (prompt, curTime())
+    STABLE_AUDIO_LDM_QUEUE.append(stored_prompt)
+    await ctx.message.add_reaction("⏳")
+
+    while len(STABLE_AUDIO_LDM_QUEUE) > 1: 
+        if stored_prompt == STABLE_AUDIO_LDM_QUEUE[0]:
+            break
+        await sleep(0.5)
+
+    neg = prompt.split("!neg")
+
+    try:
+        if len(neg) > 1:
+            out = await stableAudio(neg[0], neg[1])
+        else:
+            out = await stableAudio(prompt)
+    except Exception as e:
+        STABLE_AUDIO_LDM_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        with open(out, "rb") as f:
+            file = discord.File(f, filename="video.mp4")
+        if len(neg) > 1:
+            await ctx.reply(f"# Stable Audio: {neg[0]}\nnegative prompt: {neg[1]}",file=file)
+        else:
+            await ctx.reply(f"# Stable Audio: {prompt}",file=file)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        STABLE_AUDIO_QUEUE.pop(0)
+
+@stableAuldmldm.error
+async def sa_ldm_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        if not await CheckChannel(ctx):
+            return
+        await ctx.reply("Forgot a prompt there buddy", delete_after=15)
+        await ctx.message.delete(delay=15)
+
 GPTQUEUE = []
 @bot.command(aliases=["gpt", "GPT"])
 async def budgetChatGpt(ctx : commands.Context, *, prompt: str):
