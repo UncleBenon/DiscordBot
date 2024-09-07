@@ -1,11 +1,12 @@
 from discord.ext import commands
-from core.CORE import curTime, stableDiff, stableMusic, stableAudio
+from core.CORE import (curTime, stableDiff, stableMusic, stableAudio)
 from core.dalle import dalle
 from core.OSRS import getBondPriceOSRS
 from core.WoW import getWoWTokenPrice
 from core.SDXL_Google import Stable_XL
 from core.budgetGPT import StableLM
 from core.audioldm import stableaudioLDM
+from core.sha import getSha256
 from asyncio import sleep
 from os import remove
 import discord
@@ -49,7 +50,7 @@ async def stable(ctx : commands.Context, *, prompt : str):
     if not await CheckChannel(ctx):
         return
     global STABLE_QUEUE
-    stored_prompt = (prompt, curTime())
+    stored_prompt = getSha256(prompt)
     STABLE_QUEUE.append(stored_prompt)
     await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the stable diffusion command")
     print(f"{curTime()}  -  {ctx.author} used the stable diffusion command")
@@ -104,6 +105,7 @@ async def stableXL(ctx : commands.Context, *, prompt : str):
         return
     global STABLE_XL_QUEUE
     stored_prompt = (prompt, curTime())
+    stored_prompt = getSha256(prompt)
     STABLE_XL_QUEUE.append(stored_prompt)
     await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the stable XL command")
     print(f"{curTime()}  -  {ctx.author} used the stable XL command")
@@ -159,7 +161,7 @@ async def stableAu(ctx : commands.Context, *, prompt : str):
     global STABLE_AUDIO_QUEUE
     await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the stable audio command")
     print(f"{curTime()}  -  {ctx.author} used the stable audio command")
-    stored_prompt = (prompt, curTime())
+    stored_prompt = getSha256(prompt)
     STABLE_AUDIO_QUEUE.append(stored_prompt)
     await ctx.message.add_reaction("⏳")
 
@@ -208,7 +210,7 @@ async def stableAuldmldm(ctx : commands.Context, *, prompt : str):
     global STABLE_AUDIO_LDM_QUEUE
     await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the stable audio command")
     print(f"{curTime()}  -  {ctx.author} used the stable audio command")
-    stored_prompt = (prompt, curTime())
+    stored_prompt = getSha256(prompt)
     STABLE_AUDIO_LDM_QUEUE.append(stored_prompt)
     await ctx.message.add_reaction("⏳")
 
@@ -255,7 +257,7 @@ async def budgetChatGpt(ctx : commands.Context, *, prompt: str):
     if not await CheckChannel(ctx):
         return
     global GPTQUEUE
-    stored_prompt = (prompt, curTime())
+    stored_prompt = getSha256(prompt)
     GPTQUEUE.append(stored_prompt)
     await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the GPT command")
     print(f"{curTime()}  -  {ctx.author} used the GPT command")
@@ -310,7 +312,7 @@ async def stableMu(ctx : commands.Context, *, prompt : str):
     if not await CheckChannel(ctx):
         return
     global STABLE_MUSIC_QUEUE
-    stored_prompt = (prompt,curTime())
+    stored_prompt = getSha256(prompt)
     STABLE_MUSIC_QUEUE.append(stored_prompt)
     await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the stable music command")
     print(f"{curTime()}  -  {ctx.author} used the stable music command")
@@ -360,7 +362,7 @@ async def Dalle(ctx : commands.Context, *, prompt):
         return
 
     global DALLE_QUEUE
-    stored_prompt = (prompt, curTime())
+    stored_prompt = getSha256(prompt)
     DALLE_QUEUE.append(stored_prompt)
     await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the dalle command")
     print(f"{curTime()}  -  {ctx.author} used the dalle command")
@@ -474,7 +476,7 @@ async def facebookMU(ctx : commands.Context, *, prompt : str):
     if not await CheckChannel(ctx):
         return
     global FB_MUSIC_QUEUE
-    stored_prompt = (prompt,curTime())
+    stored_prompt = getSha256(prompt)
     FB_MUSIC_QUEUE.append(stored_prompt)
     await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the facebook music command")
     print(f"{curTime()}  -  {ctx.author} used the facebook music command")
