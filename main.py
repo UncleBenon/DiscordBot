@@ -270,13 +270,13 @@ async def budgetChatGpt(ctx : commands.Context, *, prompt: str):
     async with ctx.typing():
         GPTQUEUE.pop(0)
         if isinstance(out, str):
-            await ctx.reply(out)
+            await ctx.reply(out.strip("<|im_end|>"))
         elif isinstance(out, list):
             _counter = 0
             _out = ""
             for i, line in enumerate(out):
                 if i == 0:
-                    _out = line
+                    _out = line.strip("<|im_end|>")
                     continue
                 _out = f"{_out}\n{line}"
                 _counter = len(_out)
