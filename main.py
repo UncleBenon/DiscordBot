@@ -276,9 +276,9 @@ async def budgetChatGpt(ctx : commands.Context, *, prompt: str):
             _out = ""
             for i, line in enumerate(out):
                 if i == 0:
-                    _out = line.strip("<|im_end|>")
+                    _out = line
                     continue
-                _out = f"{_out}\n{line}"
+                _out = f"{_out}\n{line.strip('<|im_end|>')}"
                 _counter = len(_out)
                 if _counter >= 1500:
                     await ctx.reply(_out)

@@ -5,11 +5,16 @@ async def StableLM(prompt : str, DEBUG : bool = False) -> str:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless = not DEBUG)
         page = await driver.new_page()
-        #await page.goto("https://stabilityai-stablelm-2-chat.hf.space/")
-        await page.goto("https://stabilityai-stable-code-instruct-3b.hf.space")
+        await page.goto("https://stabilityai-stablelm-2-chat.hf.space/")
         await page.get_by_placeholder("input").fill(prompt)
         await page.get_by_role("button", name="Submit").click()
         await sleep(1)
+
+        if await page.get_by_text("error").is_visible():
+            await page.goto("https://stabilityai-stable-code-instruct-3b.hf.space")
+            await page.get_by_placeholder("input").fill(prompt)
+            await page.get_by_role("button", name="Submit").click()
+            await sleep(1)
 
         stop = page.get_by_role("button", name="Stop").first
         _cc = 0
@@ -32,4 +37,6 @@ if __name__ == "__main__":
             "write me an expansion idea for Final Fantasy XIV involving potatos"
         )
     )
-    print(test)
+    if isinstance(test, list):
+        for line in test:
+            print(line)
