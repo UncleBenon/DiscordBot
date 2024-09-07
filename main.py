@@ -17,7 +17,7 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 DEBUG_CHANNEL = None
 BOT_CHANNEL = None
 @bot.listen()
-async def on_ready():
+async def on_ready() -> None:
     global DEBUG_CHANNEL, BOT_CHANNEL
     name = str(bot.user).split("#")[0]
     print(f'{name} Online',f'Ping: {int(bot.latency * 1000)}ms', sep="  -  ")
@@ -30,12 +30,12 @@ async def on_ready():
         await bot.change_presence(status=discord.Status.dnd,activity=discord.Game(random.choice(vidya)))
 
 @bot.listen()
-async def on_resumed():
+async def on_resumed() -> None:
     with open("inc/vidya.txt") as f:
         vidya = f.readlines()
         await bot.change_presence(status=discord.Status.dnd,activity=discord.Game(random.choice(vidya)))
 
-async def CheckChannel(c : commands.Context):
+async def CheckChannel(c : commands.Context) -> None:
     if c.channel == BOT_CHANNEL:
         return True
     else:
@@ -43,6 +43,10 @@ async def CheckChannel(c : commands.Context):
         await c.message.delete()
         await m.delete(delay=10)
         return False
+
+@bot.command(aliases=['sd'])
+async def StableDiff(ctx : discord.Context) -> None:
+    pass
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
