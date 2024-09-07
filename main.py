@@ -421,8 +421,64 @@ async def removeBg(ctx : commands.Context):
             for file in out:
                 remove(file)
     await ctx.message.remove_reaction("⏳", member=bot.user)
- 
 
+GPTQUEUE = []
+@bot.command(aliases=["gpt", "GPT"])
+async def budgetChatGpt(ctx : commands.Context):
+    if not await CheckChannel(ctx):
+        return
+    global GPTQUEUE
+    prompt = ctx.message.content.split(' ')
+    prompt = prompt[1:]
+
+    if len(prompt) < 1:
+        ctx.reply("Need a prompt buddy!")
+        return
+
+    stored_prompt = getSha256(prompt)
+    GPTQUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the GPT command")
+    print(f"{curTime()}  -  {ctx.author} used the GPT command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(GPTQUEUE) > 1: 
+        if stored_prompt == GPTQUEUE[0]:
+            break
+        await sleep(0.5)
+ 
+    _prompt = ''
+    for word in prompt:
+        _prompt += f'{word} '
+
+    try:
+        out = await StableLM(_prompt)
+    except Exception as e:
+        GPTQUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        GPTQUEUE.pop(0)
+        if isinstance(out, str):
+            await ctx.reply(out.strip("<|im_end|>"))
+        elif isinstance(out, list):
+            _counter = 0
+            _out = ""
+            for i, line in enumerate(out):
+                if i == 0:
+                    _out = line
+                    continue
+                _out = f"{_out}\n{line.strip('<|im_end|>')}"
+                _counter = len(_out)
+                if _counter >= 1500:
+                    await ctx.reply(_out)
+                    _out = ""
+                    _counter = 0
+            if len(_out) > 0:
+                await ctx.reply(_out)
+
+        await ctx.message.remove_reaction("⏳", member=bot.user)
 
 @bot.command(aliases=['bond', 'bp'])
 async def bondprice(ctx : commands.Context):
