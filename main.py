@@ -6,6 +6,7 @@ from core.removebg import RemoveBackGroundFunction
 from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
 from core.budgetGPT import StableLM
+from core.sha import getSha256
 from discord.ext import commands
 from asyncio import sleep
 from os import remove
@@ -13,6 +14,10 @@ import discord
 import random
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+
+def curTime() -> str:
+    from time import datetime
+    return datetime.
 
 DEBUG_CHANNEL = None
 BOT_CHANNEL = None
@@ -46,7 +51,52 @@ async def CheckChannel(c : commands.Context) -> None:
 
 @bot.command(aliases=['sd'])
 async def StableDiff(ctx : discord.Context) -> None:
-    pass
+    if not await CheckChannel(ctx):
+        return
+
+    global STABLE_QUEUE
+
+    prompt = await ctx.message.content
+
+    stored_prompt = getSha256((prompt, str(ctx.user)))
+    STABLE_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the stable diffusion command")
+    print(f"{curTime()}  -  {ctx.author} used the stable diffusion command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(STABLE_QUEUE) > 1: 
+        if stored_prompt == STABLE_QUEUE[0]:
+            break
+        await sleep(1)
+    
+    neg = prompt.split("!neg")
+    
+    try:
+        if len(neg) > 1:
+            out = await stableDiff(neg[0], neg[1])
+        else:
+            out = await stableDiff(prompt)
+    except Exception as e:
+        STABLE_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        files: list[discord.File] = []
+        for file in out:
+            with open(file, "rb") as f:
+                files.append(
+                    discord.File(f, filename="image.png")
+                )
+        if len(neg) > 1:
+            await ctx.reply(f"# Stable Diff: {neg[0]}\nnegative prompt: {neg[1]}",files=files)
+        else:
+            await ctx.reply(f"# Stable Diff: {prompt}",files=files)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        for f in out:
+            remove(f)
+        STABLE_QUEUE.pop(0)
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
