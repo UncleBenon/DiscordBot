@@ -1,7 +1,8 @@
 from playwright.async_api import async_playwright
 from hashlib import sha256
 from requests import get
-from asyncio import sleep
+from asyncio import sleep, get_running_loop
+from concurrent.futures import ThreadPoolExecutor
 import os
 
 RMBG_PATH = "temp"
@@ -53,7 +54,9 @@ async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
     return fullPath
 
 async def downloadImage(url) -> str:
-    inpt = get(url)
+    with ThreadPoolExecutor(1) as exe:
+        _loop = get_running_loop()
+        inpt = await _loop.run_in_executor(exe, get, url)
     if inpt.status_code != 200:
         raise Exception(f"Dead link {url}")
     file = inpt.content
