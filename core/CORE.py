@@ -1,5 +1,6 @@
 from playwright.async_api import async_playwright 
-from asyncio import sleep
+from asyncio import sleep, get_running_loop
+from concurrent.futures import ThreadPoolExecutor
 from random import randrange
 import base64
 import os
@@ -80,7 +81,10 @@ async def stableAudio(prompt : str, neg : str = None, debug = False) -> str:
 
         link = await page.get_by_test_id("Output-player").get_attribute("src")
 
-    content = requests.get(link)
+    with ThreadPoolExecutor(1) as exe:
+        _loop = get_running_loop()
+        content = await _loop.run_in_executor(exe, requests.get, link)
+
     filename = f"{getSha256(content)}.mp4"
     fullPath = os.path.join(PATH, filename)
     if not os.path.exists(PATH):
@@ -116,7 +120,10 @@ async def stableMusic(prompt : str, neg : str = None, debug = False) -> str:
                 raise Exception("Error!")
         link = await page.get_by_test_id("Output-player").get_attribute("src")
 
-    content = requests.get(link)
+    with ThreadPoolExecutor(1) as exe:
+        _loop = get_running_loop()
+        content = await _loop.run_in_executor(exe, requests.get, link)
+
     filename = f"{getSha256(content)}.mp4"
     fullPath = os.path.join(PATH, filename)
     if not os.path.exists(PATH):

@@ -1,7 +1,8 @@
 from playwright.async_api import async_playwright
 from hashlib import sha256
 from requests import get
-from asyncio import sleep
+from asyncio import sleep, get_running_loop
+from concurrent.futures import ThreadPoolExecutor
 import os
 
 RMBG_PATH = "temp"
@@ -35,7 +36,9 @@ async def sdVidGenFunction(prompt : str, DEBUG = False):
         link = await found.get_attribute("src")
 
     # Download and Save the image.
-    file = get(link)
+    with ThreadPoolExecutor(1) as exe:
+        _loop = get_running_loop()
+        file = await _loop.run_in_executor(exe, get, link)
     if file.status_code != 200:
         raise Exception(f"Something went wrong, Download link returning {file.status_code}")
     file = file.content
