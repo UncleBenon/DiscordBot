@@ -35,7 +35,6 @@ async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
             if _cc >= 120:
                 raise Exception("Timed Out")
             if await page.get_by_text("Error").first.is_visible():
-                breakpoint()
                 raise Exception("Error!")
 
         await page.get_by_role("button", name="Submit").click()
