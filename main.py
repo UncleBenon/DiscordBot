@@ -406,11 +406,14 @@ async def removeBg(ctx : commands.Context):
             else:
                 out.append(await RemoveBackGroundFunction(file.url))
         except Exception as e:
+            RBG_QUEUE(0)
+            await ctx.message.remove_reaction("⏳", member=bot.user)
             await ctx.reply(e)
             continue
 
     if len(out) > 0:
         async with ctx.typing():
+            RBG_QUEUE(0)
             files = []
             for file in out:
                 with open(file, "rb") as f:
