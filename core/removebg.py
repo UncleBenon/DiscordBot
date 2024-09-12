@@ -4,7 +4,6 @@ from requests import get
 from asyncio import sleep, get_running_loop
 from concurrent.futures import ThreadPoolExecutor
 import os
-import re
 
 RMBG_PATH = "temp"
 async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
@@ -28,19 +27,9 @@ async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
             _upload = await f.value
             await _upload.set_files(inp)
 
-        _cc = 0
-        while await page.locator("div").filter(has_text=re.compile(r"^0$")).is_visible():
-            await sleep(1)
-            _cc += 1
-            if _cc >= 120:
-                raise Exception("Timed Out")
-            if await page.get_by_text("Error").first.is_visible():
-                raise Exception("Error!")
+        await page.wait_for_load_state("networkidle")
 
         await page.get_by_role("button", name="Submit").click()
-        
-        if await page.get_by_text("Error").is_visible():
-            raise Exception("Error")
 
         link = page.get_by_role("link", name="⇣")
         _cc = 0
@@ -50,7 +39,6 @@ async def RemoveBackGroundFunction(inp : str, DEBUG = False) -> str:
             if _cc >= 120:
                 raise Exception("Timed Out")
             if await page.get_by_text("Error").first.is_visible():
-                breakpoint()
                 raise Exception("Error!")
 
         img = await link.get_attribute("href")
@@ -71,8 +59,3 @@ async def downloadImage(url) -> str:
     with open(fullPath, 'wb') as f:
         f.write(file)
     return file, fullPath
-
-if __name__ == "__main__":
-    from asyncio import run
-    test = run(RemoveBackGroundFunction("https://cdn.discordapp.com/attachments/1048600881593061416/1283688331435053066/image.png?ex=66e3e76b&is=66e295eb&hm=423002909247e1f0383de4cc7a144395715a04077e939e236d68df617dd79d2b&", True))
-    print(test)
