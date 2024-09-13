@@ -18,7 +18,6 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
         await page.get_by_placeholder("Put your text here.").fill(prompt)
 
         await page.get_by_text("Text Normalization (ZH)").click()
-        await page.get_by_text("Load / Unload ASR model for").click()
 
         await page.get_by_role("button", name="🎧 Generate").click()
 
