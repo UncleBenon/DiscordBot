@@ -1,7 +1,7 @@
 from playwright.async_api import async_playwright 
 from asyncio import sleep, get_running_loop
 from concurrent.futures import ThreadPoolExecutor
-from sha import getSha256
+from core.sha import getSha256
 import requests
 import os
 
