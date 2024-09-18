@@ -575,13 +575,19 @@ async def VoiceSynth(ctx : commands.Context) -> None:
         await ctx.message.remove_reaction("⏳", member=bot.user)
         return
 
-    async with ctx.typing():
-        with open(out, "rb") as f:
-            file = discord.File(f, filename="audio.wav")
-            await ctx.reply(f"# Voice Synth: {_prompt}",file=file)
-        await ctx.message.remove_reaction("⏳", member=bot.user)
-        remove(out)
+    try:
+        async with ctx.typing():
+            with open(out, "rb") as f:
+                file = discord.File(f, filename="audio.wav")
+                await ctx.reply(f"# Voice Synth: {_prompt}",file=file)
+            await ctx.message.remove_reaction("⏳", member=bot.user)
+            remove(out)
+            VOICE_SYNTH_QUEUE.pop(0)
+    except Exception as e:
         VOICE_SYNTH_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
