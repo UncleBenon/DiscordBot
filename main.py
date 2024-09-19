@@ -575,6 +575,8 @@ async def VoiceSynth(ctx : commands.Context) -> None:
         await ctx.message.remove_reaction("⏳", member=bot.user)
         return
 
+    if len(_prompt) > 1500:
+        _prompt = ""
     try:
         async with ctx.typing():
             with open(out, "rb") as f:
