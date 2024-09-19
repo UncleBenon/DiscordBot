@@ -76,7 +76,7 @@ async def convertAsync(filePath : str, outputFileType : str = ".mp3") -> str:
             ffmpeg
             .input(filePath)
             .output(outFilePath)
-            .run()
+            .run(quiet=True)
         )
 
         os.remove(filePath)
