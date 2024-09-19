@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from core.sha import getSha256
 import requests
 import os
+import ffmpeg
 
 PATH = 'temp'
 async def voiceSynthFunction(prompt : str, debug = False) -> str:
@@ -58,3 +59,26 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
     with open(fullPath,"wb") as f:
         f.write(content.content)
     return fullPath
+
+async def convertAsync(filePath : str, outputFileType : str = ".mp3") -> str:
+    def convert(filePath : str, outputFileType : str = ".mp3") -> str:
+        out = filePath.split(".")
+
+        assert len(out) > 1
+        assert outputFileType.startswith(".")
+
+        outFilePath = out[0] + outputFileType
+
+        (
+            ffmpeg
+            .input(filePath)
+            .output(outFilePath)
+            .run()
+        )
+
+        return outFilePath
+
+    with ThreadPoolExecutor(1) as exe:
+        _loop = get_running_loop()
+        content = await _loop.run_in_executor(exe, convert, filePath, outputFileType)
+    return content
