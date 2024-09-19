@@ -58,6 +58,9 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
         os.mkdir(PATH)
     with open(fullPath,"wb") as f:
         f.write(content.content)
+
+    fullPath = await convertAsync(fullPath)
+
     return fullPath
 
 async def convertAsync(filePath : str, outputFileType : str = ".mp3") -> str:
@@ -76,6 +79,7 @@ async def convertAsync(filePath : str, outputFileType : str = ".mp3") -> str:
             .run()
         )
 
+        os.remove(filePath)
         return outFilePath
 
     with ThreadPoolExecutor(1) as exe:

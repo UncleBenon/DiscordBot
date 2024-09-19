@@ -578,7 +578,7 @@ async def VoiceSynth(ctx : commands.Context) -> None:
     try:
         async with ctx.typing():
             with open(out, "rb") as f:
-                file = discord.File(f, filename="audio.wav")
+                file = discord.File(f, filename="audio.mp3")
                 await ctx.reply(f"# Voice Synth: {_prompt}",file=file)
             await ctx.message.remove_reaction("⏳", member=bot.user)
             remove(out)
