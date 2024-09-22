@@ -18,9 +18,6 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
 
         yt = YouTube(url)
 
-        if yt.length >= 300:
-            raise Exception("Video above 5m, bit long no?")
-
         try:
             ys = yt.streams.get_highest_resolution()
         except Exception:
