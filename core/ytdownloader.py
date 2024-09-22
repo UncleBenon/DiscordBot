@@ -38,10 +38,10 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
         _filePath = os.path.join(PATH, _filename)
 
         sha.update(str(time()).encode())
-        if not fileType:
-            _outFilePath = sha.hexdigest() + ".mp4"
+        if fileType:
+            _outFilePath = sha.hexdigest() + fileType.lower()
         else:
-            _outFilePath = sha.hexdigest() + fileType
+            _outFilePath = sha.hexdigest() + ".mp4"
         _outFilePath = os.path.join(PATH, _outFilePath)
 
         if start and end:
@@ -80,6 +80,6 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
 
     with ThreadPoolExecutor(1) as exe:
         _loop = get_running_loop()
-        content = await _loop.run_in_executor(exe, downloadYouTubeVideo, url, start, end)
+        content = await _loop.run_in_executor(exe, downloadYouTubeVideo, url, start, end, fileType)
 
     return content
