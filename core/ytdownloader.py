@@ -7,8 +7,8 @@ import ffmpeg
 import os
 
 PATH = "temp"
-async def downloadYoutubeVideoAsync(url:str, crop : bool = False, start : str = None, end : str = None):
-    def downloadYouTubeVideo(url:str, crop : bool = False, start : str = None, end : str = None):
+async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = None):
+    def downloadYouTubeVideo(url:str, start : str = None, end : str = None):
         if not url.startswith("http"):
             raise Exception("that's not a valid link.")
 
@@ -43,24 +43,40 @@ async def downloadYoutubeVideoAsync(url:str, crop : bool = False, start : str = 
 
         _filePath = os.path.join(PATH, _filename)
 
-        if not crop:
-            return _filePath
-        else:
-            sha.update(time().encode())
+        if start or end:
+            sha.update(str(time()).encode())
             _outFilePath = sha.hexdigest() + ".mp4"
             _outFilePath = os.path.join(PATH, _outFilePath)
-            (
-                ffmpeg
-                .input(_filePath)
-                .output(_outFilePath)
-                .run(quiet=True)
-            )
+            if start and end:
+                (
+                    ffmpeg
+                    .input(_filePath, ss=start, to=end)
+                    .output(_outFilePath)
+                    .run(quiet=True)
+                )
+            elif start:
+                (
+                    ffmpeg
+                    .input(_filePath, ss=start)
+                    .output(_outFilePath)
+                    .run(quiet=True)
+                )
+            else:
+                (
+                    ffmpeg
+                    .input(_filePath, to=end)
+                    .output(_outFilePath)
+                    .run(quiet=True)
+                )
+
             os.remove(_filePath)
             return _outFilePath
+        else:
+            return _filePath
 
     with ThreadPoolExecutor(1) as exe:
         _loop = get_running_loop()
-        content = await _loop.run_in_executor(exe, downloadYouTubeVideo, url, crop, start, end)
+        content = await _loop.run_in_executor(exe, downloadYouTubeVideo, url, start, end)
 
     return content
 
@@ -69,4 +85,3 @@ if __name__ == "__main__":
     url = "https://www.youtube.com/watch?v=Y6JnYnA9Tzo&pp=ygUUd29vc2ggaGFwcHkgYmlydGhkYXk%3D"
     test = run(downloadYoutubeVideoAsync(url))
     print(test)
-    os.remove(test)
