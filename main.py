@@ -621,16 +621,17 @@ async def YouTubeDownloader(ctx : commands.Context):
 
     _start = None
     _end = None
+    _fileType = None
     for i, arg in enumerate(prompt):
         if arg.lower() == "!start":
             _start = prompt[i+1]
         if arg.lower() == "!end":
             _end = prompt[i+1]
         if arg.lower() == "!type":
-            _end = prompt[i+1]
+            _fileType = prompt[i+1]
 
     try:
-        out = await downloadYoutubeVideoAsync(prompt[0], _start, _end)
+        out = await downloadYoutubeVideoAsync(prompt[0], _start, _end, _fileType)
     except Exception as e:
         YT_QUEUE.pop(0)
         await ctx.reply(e)

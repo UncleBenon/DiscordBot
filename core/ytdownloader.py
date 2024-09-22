@@ -49,21 +49,21 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
                     ffmpeg
                     .input(_filePath, ss=start, to=end)
                     .output(_outFilePath)
-                    .run(quiet=True)
+                    .run()
                 )
             elif start:
                 (
                     ffmpeg
                     .input(_filePath, ss=start)
                     .output(_outFilePath)
-                    .run(quiet=True)
+                    .run()
                 )
             else:
                 (
                     ffmpeg
                     .input(_filePath, to=end)
                     .output(_outFilePath)
-                    .run(quiet=True)
+                    .run()
                 )
 
             os.remove(_filePath)
