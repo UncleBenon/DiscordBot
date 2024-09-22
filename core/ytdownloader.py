@@ -18,10 +18,7 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
 
         yt = YouTube(url)
 
-        try:
-            ys = yt.streams.get_highest_resolution()
-        except Exception:
-            downloadYouTubeVideo(url)
+        ys = yt.streams.get_highest_resolution()
 
         if not os.path.exists(PATH):
             os.mkdir(PATH)
@@ -30,10 +27,7 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
         sha.update(str(time()).encode())
         _filename = sha.hexdigest() + ".mp4"
 
-        try:
-            ys.download(PATH, _filename)
-        except Exception:
-            downloadYouTubeVideo(url)
+        ys.download(PATH, _filename)
 
         _filePath = os.path.join(PATH, _filename)
 
