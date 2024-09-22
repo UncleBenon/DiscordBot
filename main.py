@@ -7,6 +7,7 @@ from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
 from core.budgetGPT import StableLM
 from core.sha import getSha256
+from core.voice import voiceSynthFunction
 from discord.ext import commands
 from datetime import datetime
 from asyncio import sleep
@@ -535,6 +536,61 @@ async def TokenPrice(ctx : commands.Context):
         embed.add_field(name="Classic:", value=f":coin: {tprice[3]}", inline=True)
         await ctx.reply(embed=embed)
         await ctx.message.remove_reaction("⏳", member=bot.user)
+
+VOICE_SYNTH_QUEUE = []
+@bot.command(aliases=['vs'])
+async def VoiceSynth(ctx : commands.Context) -> None:
+    if not await CheckChannel(ctx):
+        return
+
+    global VOICE_SYNTH_QUEUE
+
+    prompt = ctx.message.content.split(' ')
+    prompt = prompt[1:]
+
+    if len(prompt) < 1:
+        ctx.reply("Need a prompt buddy!")
+        return
+
+    stored_prompt = getSha256(prompt)
+    VOICE_SYNTH_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Voice Synth command")
+    print(f"{curTime()}  -  {ctx.author} used the Voice Synth command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(VOICE_SYNTH_QUEUE) > 1: 
+        if stored_prompt == VOICE_SYNTH_QUEUE[0]:
+            break
+        await sleep(1)
+
+    _prompt = ''
+    for word in prompt:
+        _prompt += f'{word} '
+
+    try:
+        out = await voiceSynthFunction(_prompt)
+    except Exception as e:
+        VOICE_SYNTH_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    if len(_prompt) > 1500:
+        _prompt = ""
+    try:
+        async with ctx.typing():
+            with open(out, "rb") as f:
+                file = discord.File(f, filename="audio.mp3")
+                await ctx.reply(f"# Voice Synth: {_prompt}",file=file)
+            await ctx.message.remove_reaction("⏳", member=bot.user)
+            remove(out)
+            VOICE_SYNTH_QUEUE.pop(0)
+    except Exception as e:
+        VOICE_SYNTH_QUEUE.pop(0)
+        remove(out)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
