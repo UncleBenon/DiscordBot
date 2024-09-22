@@ -8,7 +8,7 @@ import os
 
 PATH = "temp"
 async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = None, fileType : str = None):
-    def downloadYouTubeVideo(url:str, start : str = None, end : str = None, fileType : str = ".mp4"):
+    def downloadYouTubeVideo(url:str, start : str = None, end : str = None, fileType : str = None):
         if not url.startswith("http"):
             raise Exception("that's not a valid link.")
 
