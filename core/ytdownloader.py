@@ -40,7 +40,7 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
 
         _filePath = os.path.join(PATH, _filename)
 
-        if start or end:
+        if len(start) > 0 or len(end) > 0:
             sha.update(str(time()).encode())
             _outFilePath = sha.hexdigest() + ".mp4"
             _outFilePath = os.path.join(PATH, _outFilePath)
