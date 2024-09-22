@@ -7,8 +7,8 @@ import ffmpeg
 import os
 
 PATH = "temp"
-async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = None):
-    def downloadYouTubeVideo(url:str, start : str = None, end : str = None):
+async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = None, fileType : str = ".mp4"):
+    def downloadYouTubeVideo(url:str, start : str = None, end : str = None, fileType : str = ".mp4"):
         if not url.startswith("http"):
             raise Exception("that's not a valid link.")
 
@@ -39,7 +39,7 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
 
         if start or end:
             sha.update(str(time()).encode())
-            _outFilePath = sha.hexdigest() + ".mp4"
+            _outFilePath = sha.hexdigest() + fileType
             _outFilePath = os.path.join(PATH, _outFilePath)
             if start and end:
                 (
@@ -64,8 +64,12 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
                 )
 
             os.remove(_filePath)
+            if not os.path.exists(_outFilePath):
+                raise Exception("wat")
             return _outFilePath
         else:
+            if not os.path.exists(_filePath):
+                raise Exception("wat")
             return _filePath
 
     with ThreadPoolExecutor(1) as exe:
