@@ -37,43 +37,46 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
 
         _filePath = os.path.join(PATH, _filename)
 
-        if start or end:
-            sha.update(str(time()).encode())
-            if not fileType:
-                _outFilePath = sha.hexdigest() + ".mp4"
-            else:
-                _outFilePath = sha.hexdigest() + fileType
-            _outFilePath = os.path.join(PATH, _outFilePath)
-            if start and end:
-                (
-                    ffmpeg
-                    .input(_filePath, ss=start, to=end)
-                    .output(_outFilePath)
-                    .run()
-                )
-            elif start:
-                (
-                    ffmpeg
-                    .input(_filePath, ss=start)
-                    .output(_outFilePath)
-                    .run()
-                )
-            else:
-                (
-                    ffmpeg
-                    .input(_filePath, to=end)
-                    .output(_outFilePath)
-                    .run()
-                )
-
-            os.remove(_filePath)
-            if not os.path.exists(_outFilePath):
-                raise Exception("wat")
-            return _outFilePath
+        sha.update(str(time()).encode())
+        if not fileType:
+            _outFilePath = sha.hexdigest() + ".mp4"
         else:
-            if not os.path.exists(_filePath):
-                raise Exception("wat")
+            _outFilePath = sha.hexdigest() + fileType
+        _outFilePath = os.path.join(PATH, _outFilePath)
+
+        if start and end:
+            (
+                ffmpeg
+                .input(_filePath, ss=start, to=end)
+                .output(_outFilePath)
+                .run(quiet=True)
+            )
+        elif start:
+            (
+                ffmpeg
+                .input(_filePath, ss=start)
+                .output(_outFilePath)
+                .run(quiet=True)
+            )
+        elif end:
+            (
+                ffmpeg
+                .input(_filePath, to=end)
+                .output(_outFilePath)
+                .run(quiet=True)
+            )
+        elif fileType:
+            (
+                ffmpeg
+                .input(_filePath)
+                .output(_outFilePath)
+                .run(quiet=True)
+            )
+        else:
             return _filePath
+
+        os.remove(_filePath)
+        return _outFilePath
 
     with ThreadPoolExecutor(1) as exe:
         _loop = get_running_loop()
