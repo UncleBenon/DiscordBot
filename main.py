@@ -8,6 +8,7 @@ from core.OSRS import getBondPriceOSRS
 from core.budgetGPT import StableLM
 from core.sha import getSha256
 from core.voice import voiceSynthFunction
+from core.ytdownloader import downloadYoutubeVideoAsync
 from discord.ext import commands
 from datetime import datetime
 from asyncio import sleep
@@ -587,6 +588,63 @@ async def VoiceSynth(ctx : commands.Context) -> None:
             VOICE_SYNTH_QUEUE.pop(0)
     except Exception as e:
         VOICE_SYNTH_QUEUE.pop(0)
+        remove(out)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+YT_QUEUE = []
+@bot.command(aliases=['yt'])
+async def YouTubeDownloader(ctx : commands.Context):
+    if not await CheckChannel(ctx):
+        return
+
+    global YT_QUEUE
+
+    prompt = ctx.message.content.split(' ')
+    prompt = prompt[1:]
+
+    if len(prompt) < 1:
+        ctx.reply("Need a prompt buddy!")
+        return
+
+    stored_prompt = getSha256(prompt)
+    YT_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the YouTube Download command")
+    print(f"{curTime()}  -  {ctx.author} used the YouTube Download command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(YT_QUEUE) > 1: 
+        if stored_prompt == YT_QUEUE[0]:
+            break
+        await sleep(1)
+
+    _start = None
+    _end = None
+    for i, arg in enumerate(prompt):
+        if arg.lower() == "!start":
+            _start = prompt[i+1]
+        if arg.lower() == "!end":
+            _end = prompt[i+1]
+
+    try:
+        out = await downloadYoutubeVideoAsync(prompt[0], _start, _end)
+    except Exception as e:
+        YT_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    try:
+        async with ctx.typing():
+            with open(out, "rb") as f:
+                file = discord.File(f, filename="video.mp4")
+                await ctx.reply("# Youtube Downloader: ",file=file)
+            await ctx.message.remove_reaction("⏳", member=bot.user)
+            remove(out)
+            YT_QUEUE.pop(0)
+    except Exception as e:
+        YT_QUEUE.pop(0)
         remove(out)
         await ctx.reply(e)
         await ctx.message.remove_reaction("⏳", member=bot.user)
