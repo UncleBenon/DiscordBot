@@ -12,15 +12,12 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
         if not url.startswith("http"):
             raise Exception("that's not a valid link.")
 
-        # some string magic to get it working
         url = url.split("&")
 
         url = fr"{url[0]}"
 
-        # lmao
         yt = YouTube(url)
 
-        # check if the vid is shorter than 5m
         if yt.length >= 300:
             raise Exception("Video above 5m, bit long no?")
 
@@ -29,9 +26,6 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
         except Exception:
             downloadYouTubeVideo(url)
 
-        if ys.filesize_mb >= 25:
-            raise Exception("File size too big, sorry bro. (above 25mb)")
-
         if not os.path.exists(PATH):
             os.mkdir(PATH)
 
@@ -39,7 +33,10 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
         sha.update(str(time()).encode())
         _filename = sha.hexdigest() + ".mp4"
 
-        ys.download(PATH, _filename)
+        try:
+            ys.download(PATH, _filename)
+        except Exception:
+            downloadYouTubeVideo(url)
 
         _filePath = os.path.join(PATH, _filename)
 
@@ -79,9 +76,3 @@ async def downloadYoutubeVideoAsync(url:str, start : str = None, end : str = Non
         content = await _loop.run_in_executor(exe, downloadYouTubeVideo, url, start, end)
 
     return content
-
-if __name__ == "__main__":
-    from asyncio import run
-    url = "https://www.youtube.com/watch?v=Y6JnYnA9Tzo&pp=ygUUd29vc2ggaGFwcHkgYmlydGhkYXk%3D"
-    test = run(downloadYoutubeVideoAsync(url))
-    print(test)
