@@ -12,7 +12,7 @@ from core.ytdownloader import downloadYoutubeVideoAsync
 from discord.ext import commands
 from datetime import datetime
 from asyncio import sleep
-from os import remove
+from os import remove, path
 import discord
 import random
 
@@ -626,6 +626,8 @@ async def YouTubeDownloader(ctx : commands.Context):
             _start = prompt[i+1]
         if arg.lower() == "!end":
             _end = prompt[i+1]
+        if arg.lower() == "!type":
+            _end = prompt[i+1]
 
     try:
         out = await downloadYoutubeVideoAsync(prompt[0], _start, _end)
@@ -638,7 +640,8 @@ async def YouTubeDownloader(ctx : commands.Context):
     try:
         async with ctx.typing():
             with open(out, "rb") as f:
-                file = discord.File(f, filename="video.mp4")
+                _name = path.basename(out)
+                file = discord.File(f, filename=_name)
                 await ctx.reply("# Youtube Downloader: ",file=file)
             await ctx.message.remove_reaction("⏳", member=bot.user)
             remove(out)
