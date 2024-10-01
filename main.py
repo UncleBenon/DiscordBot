@@ -694,16 +694,11 @@ async def Flux(ctx : commands.Context) -> None:
         return
 
     async with ctx.typing():
-        files: list[discord.File] = []
-        for file in out:
-            with open(file, "rb") as f:
-                files.append(
-                    discord.File(f, filename="image.png")
-                )
-        await ctx.reply(f"# Flux: {_prompt}",files=files)
+        with open(out, "rb") as f:
+            file = discord.File(f, filename=path.basename(out))
+        await ctx.reply(f"# Flux: {_prompt}",file=file)
         await ctx.message.remove_reaction("⏳", member=bot.user)
-        for f in out:
-            remove(f)
+        remove(out)
         FLUX_QUEUE.pop(0)
 
 if __name__ == "__main__":
