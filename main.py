@@ -681,12 +681,24 @@ async def Flux(ctx : commands.Context) -> None:
             break
         await sleep(1)
 
+    _times = 1
     _prompt = ''
-    for word in prompt:
+    for i, word in enumerate(prompt):
+        if word.lower() == "!x":
+            continue
+        if i > 0 and prompt[i-1].lower() == "!x":
+            _times = int(word)
+            continue
         _prompt += f'{word} '
 
     try:
-        out = await fluxMasterFunction(_prompt)
+        if _times > 1:
+            _times = 4 if _times > 4 else _times
+            out = []
+            for _ in range(_times):
+                out.append(await fluxMasterFunction(_prompt))
+        else:
+            out = await fluxMasterFunction(_prompt)
     except Exception as e:
         FLUX_QUEUE.pop(0)
         await ctx.reply(e)
@@ -694,11 +706,22 @@ async def Flux(ctx : commands.Context) -> None:
         return
 
     async with ctx.typing():
-        with open(out, "rb") as f:
-            file = discord.File(f, filename=path.basename(out))
-        await ctx.reply(f"# Flux: {_prompt}",file=file)
+        if isinstance(out, list):
+            files = []
+            for img in out:
+                with open(img, "rb") as f:
+                    files.append(
+                        discord.File(f, filename=path.basename(img))
+                    )
+            await ctx.reply(f"# Flux: {_prompt}",files=files)
+            for img in out:
+                remove(img)
+        else:
+            with open(out, "rb") as f:
+                file = discord.File(f, filename=path.basename(out))
+            await ctx.reply(f"# Flux: {_prompt}",file=file)
+            remove(out)
         await ctx.message.remove_reaction("⏳", member=bot.user)
-        remove(out)
         FLUX_QUEUE.pop(0)
 
 if __name__ == "__main__":
