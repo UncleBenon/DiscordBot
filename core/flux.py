@@ -22,13 +22,17 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
 
         imgs = await page.query_selector_all('img')
         _cc = 0
+        _error = 0
         while len(imgs) <= 4:
             await sleep(1)
             _cc += 1
             if _cc >= 120:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
-                raise Exception("Error!")
+                if _error > 5:
+                    raise Exception("Error!")
+                _error += 1
+                await page.get_by_role("button", name="Run").click()
             imgs = await page.query_selector_all('img')
         for found in imgs:
             link = await found.get_attribute('src')
