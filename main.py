@@ -9,6 +9,7 @@ from core.budgetGPT import StableLM
 from core.sha import getSha256
 from core.voice import voiceSynthFunction
 from core.ytdownloader import downloadYoutubeVideoAsync
+from core.flux import fluxMasterFunction
 from discord.ext import commands
 from datetime import datetime
 from asyncio import sleep
@@ -653,6 +654,57 @@ async def YouTubeDownloader(ctx : commands.Context):
         await ctx.reply(e)
         await ctx.message.remove_reaction("⏳", member=bot.user)
         return
+
+FLUX_QUEUE = []
+@bot.command(aliases=['flux'])
+async def Flux(ctx : commands.Context) -> None:
+    if not await CheckChannel(ctx):
+        return
+
+    global FLUX_QUEUE
+
+    prompt = ctx.message.content.split(' ')
+    prompt = prompt[1:]
+
+    if len(prompt) < 1:
+        ctx.reply("Need a prompt buddy!")
+        return
+
+    stored_prompt = getSha256(prompt)
+    FLUX_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Flux command")
+    print(f"{curTime()}  -  {ctx.author} used the Flux command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(FLUX_QUEUE) > 1: 
+        if stored_prompt == FLUX_QUEUE[0]:
+            break
+        await sleep(1)
+
+    _prompt = ''
+    for word in prompt:
+        _prompt += f'{word} '
+
+    try:
+        out = await fluxMasterFunction(_prompt)
+    except Exception as e:
+        FLUX_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        files: list[discord.File] = []
+        for file in out:
+            with open(file, "rb") as f:
+                files.append(
+                    discord.File(f, filename="image.png")
+                )
+        await ctx.reply(f"# Flux: {_prompt}",files=files)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        for f in out:
+            remove(f)
+        FLUX_QUEUE.pop(0)
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
