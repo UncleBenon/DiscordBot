@@ -29,10 +29,11 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
             if _cc >= 120:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
-                if _error > 5:
+                if _error > 10:
                     raise Exception("Error!")
                 _error += 1
                 await page.get_by_role("button", name="Run").click()
+                await sleep(1)
             imgs = await page.query_selector_all('img')
         for found in imgs:
             link = await found.get_attribute('src')
