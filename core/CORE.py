@@ -2,7 +2,6 @@ from playwright.async_api import async_playwright
 from asyncio import sleep, get_running_loop
 from concurrent.futures import ThreadPoolExecutor
 from random import randrange
-import base64
 import os
 import requests
 from core.sha import getSha256
@@ -27,24 +26,22 @@ async def stableDiff(prompt : str, neg : str = None, debug : bool = False) -> li
             if await page.get_by_text("Error").first.is_visible():
                 raise Exception("Error!")
         imgs = await page.query_selector_all('img')
-        b64 = []
+        files = []
         for found in imgs:
             link = await found.get_attribute('src')
-            if link.endswith(".svg"):
-                continue
-            b64.append(
-                base64.b64decode(
-                    link.split(',')[1]
-                )
-            )
+            if link.endswith(".jpg"):
+                with ThreadPoolExecutor(1) as exe:
+                    _loop = get_running_loop()
+                    content = await _loop.run_in_executor(exe, requests.get, link)
+                files.append(content)
         out = []
-        for img in b64:
+        for img in files:
             filename = f"{getSha256(img)}.png"
             fullPath = os.path.join(PATH, filename)
             if not os.path.exists(PATH):
                 os.mkdir(PATH)
             with open(fullPath,"wb") as f:
-                f.write(img)
+                f.write(img.content)
                 out.append(fullPath)
         return out
 
