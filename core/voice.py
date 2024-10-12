@@ -64,7 +64,7 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
 
     return fullPath
 
-async def convertAsync(filePath : str, outputFileType : str = ".mp3") -> str:
+async def convertAsync(filePath : str, outputFileType : str = ".mp4") -> str:
     def convert() -> str:
         out = filePath.split(".")
 
