@@ -81,7 +81,7 @@ async def convertAsync(filePath : str, outputFileType : str = ".mp4") -> str:
         img = ffmpeg.input(random.choice(imgs), loop=1)
         sound = ffmpeg.input(filePath)
 
-        ffmpeg.output(img.video, sound.audio, outFilePath, shortest=None).run(quiet=True)
+        ffmpeg.output(img.video, sound.audio, outFilePath, shortest=None, threads=1).run(quiet=True)
 
         os.remove(filePath)
         return outFilePath
