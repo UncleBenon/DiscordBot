@@ -88,5 +88,5 @@ async def convertAsync(filePath : str, outputFileType : str = ".mp3") -> str:
 
     with ThreadPoolExecutor(1) as exe:
         _loop = get_running_loop()
-        content = await _loop.run_in_executor(exe, convert, filePath, outputFileType)
+        content = await _loop.run_in_executor(exe, convert)
     return content
