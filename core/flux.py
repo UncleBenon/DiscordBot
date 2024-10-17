@@ -34,6 +34,7 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
                     raise Exception("Error!")
                 _cc = 0
                 _error += 1
+                await page.get_by_role("button", name="Run").click()
             imgs = await page.query_selector_all('img')
         for found in imgs:
             link = await found.get_attribute('src')
