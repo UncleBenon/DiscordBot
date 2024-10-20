@@ -18,6 +18,7 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
             raise Exception("Space is having errors, not the bot's fault")
 
         await sleep(1)
+        await page.get_by_test_id("textbox").click()
         await page.get_by_test_id("textbox").fill(prompt)
         await page.get_by_role("button", name="Run").click()
 
