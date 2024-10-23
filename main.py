@@ -661,6 +661,7 @@ FLUX_QUEUE = []
 async def Flux(ctx : commands.Context) -> None:
     if not await CheckChannel(ctx):
         return
+    return # Dead 404.
 
     global FLUX_QUEUE
 
