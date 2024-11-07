@@ -19,7 +19,7 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
 
         await sleep(1)
 
-        await page.get_by_role("button", name="Advanced Settings ▼").click()
+        await page.get_by_role("button", name="Advanced Settings").click()
         await page.get_by_placeholder("What should not be in the").fill("")
         await page.get_by_placeholder("Enter a prompt here").fill(prompt)
         await page.get_by_role("button", name="Run").click()
