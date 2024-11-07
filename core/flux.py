@@ -4,7 +4,7 @@ from hashlib import sha256
 from asyncio import sleep
 import os
 
-url = "https://prodia-flux-1-dev.hf.space/"
+url = "https://zhofang-flux-1-dev-serverless-darn.hf.space/"
 
 DIR_PATH = "temp"
 async def fluxMasterFunction(prompt : str, DEBUG = False):
