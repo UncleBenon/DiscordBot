@@ -54,4 +54,3 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
         f.write(file)
 
     return fullPath
-
