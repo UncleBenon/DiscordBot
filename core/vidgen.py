@@ -16,7 +16,10 @@ async def sdVidGenFunction(prompt : str, DEBUG = False):
         page = await driver.new_page()
         await page.goto("https://ali-vilab-modelscope-text-to-video-synthesis.hf.space")
 
-        # if the page is having errors raise this:
+        while await page.get_by_text("Preparing Space").is_visible():
+            await sleep(10)
+            await page.goto("https://ali-vilab-modelscope-text-to-video-synthesis.hf.space")
+
         if await page.get_by_text("Your space is in error").is_visible():
             raise Exception("Space is having errors, not the bot's fault")
             
