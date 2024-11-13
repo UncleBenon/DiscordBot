@@ -17,6 +17,10 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
         if await page.get_by_text("Your space is in error").is_visible():
             raise Exception("Space is having errors, not the bot's fault")
 
+        while await page.get_by_text("Preparing Space").is_visible():
+            await sleep(10)
+            await page.goto(url)
+
         await sleep(1)
 
         await page.get_by_placeholder("Enter a prompt here").fill(prompt)
