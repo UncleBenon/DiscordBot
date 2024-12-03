@@ -43,6 +43,8 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
                 await page.get_by_role("button", name="🎧 Generate").click()
                 _errorforce += 1
                 _cc = 0
+            if await page.get_by_text("no audio").is_visible():
+                raise Exception("no audio generated, dunno why lmao")
 
         links = await page.locator('a').all()
         for out in links[::-1]:
