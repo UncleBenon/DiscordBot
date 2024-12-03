@@ -25,6 +25,8 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
 
         await page.get_by_placeholder("Put your text here.").fill(prompt)
 
+        await sleep(1)
+
         await page.get_by_role("button", name="🎧 Generate").click()
 
         found = page.get_by_label("Download")
