@@ -23,7 +23,7 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
             await page.goto("https://fishaudio-fish-speech-1.hf.space")
             #await page.goto("https://kaiserml-fish-speech-1.hf.space")
 
-        await page.goto("https://kaiserml-fish-speech-1.hf.space/?__theme=light")
+        await page.goto("https://fishaudio-fish-speech-1.hf.space/?__theme=light")
 
         await page.get_by_placeholder("Put your text here.").fill(prompt)
 
