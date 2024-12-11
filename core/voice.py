@@ -12,16 +12,16 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
-        #await page.goto("https://fishaudio-fish-speech-1.hf.space")
-        await page.goto("https://kaiserml-fish-speech-1.hf.space")
+        await page.goto("https://fishaudio-fish-speech-1.hf.space")
+        #await page.goto("https://kaiserml-fish-speech-1.hf.space")
 
         if await page.get_by_text("Your space is in error").is_visible():
             raise Exception("Space is having errors, not the bot's fault")
 
         while await page.get_by_text("Preparing Space").is_visible():
             await sleep(10)
-            #await page.goto("https://fishaudio-fish-speech-1.hf.space")
-            await page.goto("https://kaiserml-fish-speech-1.hf.space")
+            await page.goto("https://fishaudio-fish-speech-1.hf.space")
+            #await page.goto("https://kaiserml-fish-speech-1.hf.space")
 
         await page.goto("https://kaiserml-fish-speech-1.hf.space/?__theme=light")
 
