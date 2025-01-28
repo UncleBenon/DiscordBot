@@ -42,6 +42,8 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
             if await page.get_by_text("Error").first.is_visible():
                 if _errorforce > 4:
                     raise Exception("Error!")
+                if await page.get_by_text("CUDA error: device-side assert triggered CUDA kernel errors").is_visible():
+                    raise Exception("Cuda Error, Classic.")
                 await page.get_by_role("button", name="🎧 Generate").click()
                 _errorforce += 1
                 _cc = 0
