@@ -100,13 +100,16 @@ async def stableMusic(prompt : str, neg : str = None, debug = False) -> str:
         while await page.get_by_text("Preparing Space").is_visible():
             await sleep(10)
             await page.goto("https://haoheliu-audioldm2-text2audio-text2music.hf.space")
+
+        await sleep(2.5)
         await page.get_by_label("Input text Your text is").fill(prompt)
         if neg:
             await page.get_by_label("Negative prompt Enter a").fill(neg)
-        await page.get_by_text("Click to modify detailed configurations ▼").click()
-        await page.get_by_label("Seed Change this value (any").fill(f"{randrange(0,99999999)}")
-        await page.locator("#component-9").get_by_test_id("number-input").fill(str(15))
+        await page.get_by_role("button", name="Click to modify detailed").click()
+        await page.get_by_label("Seed").fill(f"{randrange(0,99999999)}")
+        await page.get_by_label("number input for Duration (").fill("15")
         await page.get_by_role("button", name="Submit").click()
+
         _cc = 0
         while not await page.get_by_test_id("Output-player").is_visible():
             await sleep(1)
