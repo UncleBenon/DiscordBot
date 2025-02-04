@@ -38,7 +38,7 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
             if _cc >= 600:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
-                if _errorforce >= 100:
+                if _errorforce >= 10:
                     raise Exception("Error!")
                 if await page.get_by_text("CUDA error: device-side assert triggered CUDA kernel errors").is_visible():
                     raise Exception("Cuda Error, Classic.")
