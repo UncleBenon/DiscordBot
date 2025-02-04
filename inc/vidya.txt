@@ -14,6 +14,7 @@ in the Gorilla Pen
 with your GPU
 with NeoVim
 with Debian 12
+with Debian 13
 falling asleep on Zoom
 with OpenCV
 with Discord.Py
@@ -29,6 +30,7 @@ with Python
 with C++
 with HTML / CSS
 with C
+with NodeJS
 Reviving Concord
 Nintendo Lawsuit Simulator
 Tekken 8: MTX Edition
