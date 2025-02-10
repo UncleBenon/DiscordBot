@@ -12,11 +12,11 @@ async def stableaudioLDM(prompt : str, neg : str = None, debug = False) -> str:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
         await page.goto("https://haoheliu-audioldm-48k-text-to-hifiaudio-generation.hf.space")
-        if await page.get_by_text("Your space is in error").is_visible():
-            raise Exception("Space is having errors, not the bot's fault")
         while await page.get_by_text("Preparing Space").is_visible():
             await sleep(10)
             await page.goto("https://haoheliu-audioldm-48k-text-to-hifiaudio-generation.hf.space")
+        if await page.get_by_text("Your space is in error").is_visible():
+            raise Exception("Space is having errors, not the bot's fault")
         await page.get_by_text("Click to modify detailed").click()
         await page.get_by_label("Duration (seconds)").fill("15")
         await page.get_by_label("Change this value (").fill(f"{randrange(0,99999999)}")
