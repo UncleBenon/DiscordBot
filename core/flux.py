@@ -31,7 +31,7 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
         while not await page.locator("#gallery").get_by_role("button").nth(3).is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 120:
+            if _cc >= 300:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
                 if _error >= 10:
