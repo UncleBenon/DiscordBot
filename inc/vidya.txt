@@ -15,6 +15,7 @@ with your GPU
 with NeoVim
 with Debian 12
 with Debian 13
+with Arch Linux
 falling asleep on Zoom
 with OpenCV
 with Discord.Py
