@@ -10,6 +10,7 @@ from core.sha import getSha256
 from core.voice import voiceSynthFunction
 from core.ytdownloader import downloadYoutubeVideoAsync
 from core.flux import fluxMasterFunction
+from core.badTranslate import badTranslateFunction
 from discord.ext import commands
 from datetime import datetime
 from asyncio import sleep
@@ -701,6 +702,50 @@ async def Flux(ctx : commands.Context) -> None:
         remove(out)
         await ctx.message.remove_reaction("⏳", member=bot.user)
         FLUX_QUEUE.pop(0)
+
+TL_QUEUE = []
+@bot.command(aliases=['btl'])
+async def badtranslate(ctx : commands.Context) -> None:
+    if not await CheckChannel(ctx):
+        return
+
+    global TL_QUEUE
+
+    prompt = ctx.message.content.split(' ')
+    prompt = prompt[1:]
+
+    if len(prompt) < 1:
+        ctx.reply("Need a prompt buddy!")
+        return
+
+    stored_prompt = getSha256(prompt)
+    TL_QUEUE.append(stored_prompt)
+    await DEBUG_CHANNEL.send(f"{curTime()}  -  {ctx.author} used the Bad Translate command")
+    print(f"{curTime()}  -  {ctx.author} used the Bad Translate command")
+    await ctx.message.add_reaction("⏳")
+
+    while len(TL_QUEUE) > 1: 
+        if stored_prompt == TL_QUEUE[0]:
+            break
+        await sleep(1)
+
+    _prompt = ''
+    for word in prompt:
+        _prompt += f'{word} '
+
+    try:
+        out = await badTranslateFunction(_prompt)
+    except Exception as e:
+        TL_QUEUE.pop(0)
+        await ctx.reply(e)
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        return
+
+    async with ctx.typing():
+        await ctx.reply(f"# Bad Translation: {out}")
+        await ctx.message.remove_reaction("⏳", member=bot.user)
+        TL_QUEUE.pop(0)
+
 
 if __name__ == "__main__":
     with open("inc/token.txt") as f:
