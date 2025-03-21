@@ -21,7 +21,7 @@ async def stableDiff(prompt : str, neg : str = None, debug : bool = False) -> li
         while not await imgs.first.is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 120:
+            if _cc >= 600:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
                 raise Exception("Error!")

@@ -17,7 +17,7 @@ async def dalle(prompt, debug = False) -> list[str]:
         while not await page.locator("#gallery div").nth(1).is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 120:
+            if _cc >= 600:
                 raise Exception("Timed out")
             if await page.get_by_text("Error").first.is_visible():
                 raise Exception("Error!")
