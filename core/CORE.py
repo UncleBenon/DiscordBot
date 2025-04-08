@@ -50,7 +50,7 @@ async def stableAudio(prompt : str, neg : str = None, debug = False) -> str:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
         await page.goto("https://haoheliu-audioldm-text-to-audio-generation.hf.space/")
-        if await page.get_by_text("Your space is in error").is_visible():
+        if await page.get_by_text("Your space is in error").is_visible() or await page.get_by_text("Internal Server Error").is_visible():
             raise Exception("Space is having errors, not the bot's fault")
         while await page.get_by_text("Preparing Space").is_visible():
             await sleep(10)

@@ -25,7 +25,11 @@ async def Stable_XL(prompt : str, negPrompt : str = None, debug : bool = False) 
             if _cc >= 600:
                 raise Exception("Timed out")
             if await page.get_by_text("Error").first.is_visible():
-                raise Exception("Error")
+                if _ccc < 10:
+                    await page.get_by_role("button", name="Generate").click()
+                    _ccc += 1
+                else:
+                    raise Exception("Error")
 
         imgs = await page.query_selector_all('img')
 
