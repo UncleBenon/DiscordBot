@@ -6,6 +6,10 @@ async def StableLM(prompt : str, DEBUG : bool = False) -> str:
         driver = await p.firefox.launch(headless = not DEBUG)
         page = await driver.new_page()
         await page.goto("https://stabilityai-stablelm-2-chat.hf.space/")
+
+        if await page.get_by_text("Your space is in error").is_visible():
+            raise Exception("Space is having errors, not the bot's fault")
+
         await page.get_by_placeholder("input").fill(prompt)
         await page.get_by_role("button", name="Submit").click()
         await sleep(1)
@@ -21,7 +25,7 @@ async def StableLM(prompt : str, DEBUG : bool = False) -> str:
         while await stop.is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 120:
+            if _cc >= 300:
                 raise Exception("Timed out")
 
         await sleep(1)
