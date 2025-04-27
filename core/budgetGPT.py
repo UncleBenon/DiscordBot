@@ -21,7 +21,7 @@ async def StableLM(prompt : str, DEBUG : bool = False) -> str:
         while await stop.is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 120:
+            if _cc >= 600:
                 raise Exception("Timed out")
 
         await sleep(1)
