@@ -24,8 +24,7 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
 
         await sleep(1)
 
-        #await page.get_by_label("number input for Width").fill("1024")
-        await page.get_by_placeholder("Enter prompt...").fill(prompt)
+        await page.get_by_placeholder("Enter a prompt here").fill(prompt)
         await page.get_by_role("button", name="Run").click()
 
         _cc = 0
