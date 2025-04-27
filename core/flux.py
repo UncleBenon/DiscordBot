@@ -4,7 +4,8 @@ from hashlib import sha256
 from asyncio import sleep
 import os
 
-url = "https://peepdaslan9-b2bmgmt-flux-lab-light.hf.space/"
+#url = "https://peepdaslan9-b2bmgmt-flux-lab-light.hf.space/"
+url = "https://peepdaslan9-b2bmgmt-flux-1-schnell-serverless.hf.space/"
 
 DIR_PATH = "temp"
 async def fluxMasterFunction(prompt : str, DEBUG = False):
@@ -23,13 +24,13 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
 
         await sleep(1)
 
-        await page.get_by_label("number input for Width").fill("1024")
+        #await page.get_by_label("number input for Width").fill("1024")
         await page.get_by_placeholder("Enter prompt...").fill(prompt)
         await page.get_by_role("button", name="Run").click()
 
         _cc = 0
         _error = 0
-        while not await page.locator("#component-6").get_by_role("button").nth(3).is_visible():
+        while not await page.locator("#gallery").get_by_role("button").nth(3).is_visible():
             await sleep(1)
             _cc += 1
             if _cc >= 600:
