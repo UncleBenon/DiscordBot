@@ -71,7 +71,7 @@ async def stableAudio(prompt : str, neg : str = None, debug = False) -> str:
         while not await found.is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 300:
+            if _cc >= 120:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
                 raise Exception("Error!")
@@ -114,7 +114,7 @@ async def stableMusic(prompt : str, neg : str = None, debug = False) -> str:
         while not await page.get_by_test_id("Output-player").is_visible():
             await sleep(1)
             _cc +=1
-            if _cc >= 300:
+            if _cc >= 120:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
                 raise Exception("Error!")
