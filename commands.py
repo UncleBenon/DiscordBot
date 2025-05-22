@@ -221,6 +221,7 @@ class ChatCommands(commands.Cog):
         if len(prompt) > 1500:
             prompt = ""
         try:
+            await storedMsg.delete()
             async with ctx.typing():
                 with open(out, "rb") as f:
                     _name = path.basename(out)
@@ -245,9 +246,9 @@ class ChatCommands(commands.Cog):
         self.barkQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the bark voice synth command\n\n{prompt[:100]}"
+            f"{curTime()}  -  {ctx.author} used the Bark voice synth command\n\n{prompt[:100]}"
         )
-        print(f"{curTime()}  -  {ctx.author} used the bark voice synth command")
+        print(f"{curTime()}  -  {ctx.author} used the Bark voice synth command")
 
         storedMsg: discord.Message = None
         if len(self.barkQueue) > 1:
@@ -264,7 +265,7 @@ class ChatCommands(commands.Cog):
             out, voice = await barkVoiceSynthFunc(prompt)
         except Exception as e:
             self.barkQueue.pop(0)
-            await ctx.reply(f"bark Voice Synth: {e}")
+            await ctx.reply(f"Bark Voice Synth: {e}")
             await storedMsg.delete()
             return
 
@@ -272,16 +273,17 @@ class ChatCommands(commands.Cog):
             prompt = ""
         try:
             async with ctx.typing():
+                await storedMsg.delete()
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# bark Voice Synth: {prompt}\n{voice}", file=file)
+                    await ctx.reply(f"# Bark Voice Synth: {prompt}\n{voice}", file=file)
                 remove(out)
                 self.barkQueue.pop(0)
         except Exception as e:
             self.barkQueue.pop(0)
             remove(out)
-            await ctx.reply(f"bark voice synth: {e}")
+            await ctx.reply(f"Bark voice synth: {e}")
             return
 
     @commands.hybrid_command(
