@@ -434,3 +434,19 @@ class ChatCommands(commands.Cog):
             embed.add_field(name="Retail:", value=f":coin: {tprice[1]}", inline=True)
             embed.add_field(name="Classic:", value=f":coin: {tprice[3]}", inline=True)
             await ctx.reply(embed=embed)
+
+    #TODO: implement stable music (if they ever comee back online)
+    @commands.hybrid_command(
+        name="sm",
+        description="Stable Music - Generate silly music with an AI.",
+    )
+    async def stablemusic(self, ctx, prompt):
+        pass
+
+    #TODO: implement stable audio (if they ever comee back online)
+    @commands.hybrid_command(
+        name="sa",
+        description="Stable Audio - Generate silly audio with an AI.",
+    )
+    async def stableaudio(self, ctx, prompt):
+        pass
