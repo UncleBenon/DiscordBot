@@ -2,9 +2,9 @@ from playwright.async_api import async_playwright
 from asyncio import sleep, get_running_loop
 from concurrent.futures import ThreadPoolExecutor
 from core.sha import getSha256
+from core.misc import convertAsync
 import requests
 import os
-import ffmpeg
 
 PATH = 'temp'
 async def voiceSynthFunction(prompt : str, debug = False) -> str:
@@ -16,13 +16,20 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
         if await page.get_by_text("Your space is in error").is_visible():
             raise Exception("Space is having errors, not the bot's fault")
 
+        if await page.get_by_text("502 Bad Gateway").is_visible():
+            raise Exception("Page is giving a 502, it's dead jim.")
+
         while await page.get_by_text("Preparing Space").is_visible():
             await sleep(10)
             await page.goto("https://fishaudio-fish-speech-1.hf.space")
 
         await page.goto("https://fishaudio-fish-speech-1.hf.space/?__theme=light")
 
+        await sleep(3)
+
         await page.get_by_placeholder("Put your text here.").fill(prompt)
+
+        await sleep(1)
 
         await page.get_by_role("button", name="🎧 Generate").click()
 
@@ -32,14 +39,18 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
         while not await found.is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 120:
+            if _cc >= 600:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
-                if _errorforce > 4:
+                if _errorforce >= 10:
                     raise Exception("Error!")
+                if await page.get_by_text("CUDA error: device-side assert triggered CUDA kernel errors").is_visible():
+                    raise Exception("Cuda Error, Classic.")
                 await page.get_by_role("button", name="🎧 Generate").click()
                 _errorforce += 1
                 _cc = 0
+            if await page.get_by_text("no audio").is_visible():
+                raise Exception("no audio generated, dunno why lmao")
 
         links = await page.locator('a').all()
         for out in links[::-1]:
@@ -62,27 +73,3 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
     fullPath = await convertAsync(fullPath)
 
     return fullPath
-
-async def convertAsync(filePath : str, outputFileType : str = ".mp3") -> str:
-    def convert(filePath : str, outputFileType : str = ".mp3") -> str:
-        out = filePath.split(".")
-
-        assert len(out) > 1
-        assert outputFileType.startswith(".")
-
-        outFilePath = out[0] + outputFileType
-
-        (
-            ffmpeg
-            .input(filePath)
-            .output(outFilePath)
-            .run(quiet=True)
-        )
-
-        os.remove(filePath)
-        return outFilePath
-
-    with ThreadPoolExecutor(1) as exe:
-        _loop = get_running_loop()
-        content = await _loop.run_in_executor(exe, convert, filePath, outputFileType)
-    return content

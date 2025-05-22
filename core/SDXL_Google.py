@@ -17,14 +17,19 @@ async def Stable_XL(prompt : str, negPrompt : str = None, debug : bool = False) 
         await page.get_by_role("button", name="Generate").click()
 
         _cc = 0
+        _ccc = 0
 
         while await page.get_by_label("Thumbnail 1 of").is_hidden():
             await sleep(1)
             _cc += 1
-            if _cc >= 120:
+            if _cc >= 600:
                 raise Exception("Timed out")
             if await page.get_by_text("Error").first.is_visible():
-                raise Exception("Please try again with a different prompt\nRemember, it's Google. No Naughty words!")
+                if _ccc < 10:
+                    await page.get_by_role("button", name="Generate").click()
+                    _ccc += 1
+                else:
+                    raise Exception("Error")
 
         imgs = await page.query_selector_all('img')
 
