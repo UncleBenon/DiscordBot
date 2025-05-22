@@ -1,19 +1,14 @@
 from os import path, remove
-from core.misc import (
-    curTime,
-    STABLE_QUEUE,
-    STABLE_XL_QUEUE,
-    DALLE_QUEUE,
-    VS_QUEUE,
-    BARK_QUEUE,
-)
+from core.misc import curTime
 from core.sha import getSha256
 from core.CORE import stableDiff
 from core.SDXL_Google import Stable_XL
 from core.dalle import dalle
 from core.voice import voiceSynthFunction
+from core.bark import barkVoiceSynthFunc
 from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
+from core.removebg import RemoveBackGroundFunction
 from asyncio import sleep
 from discord.ext import commands
 import discord
@@ -24,11 +19,12 @@ class ChatCommands(commands.Cog):
         self.bot = bot
         self.BOT_CHANNEL = botChannel
         self.DEBUG_CHANNEL = debugChannel
-        self.stableQueue = STABLE_QUEUE
-        self.stableXLQueue = STABLE_XL_QUEUE
-        self.dalleQueue = DALLE_QUEUE
-        self.vsQueue = VS_QUEUE
-        self.barkQueue = BARK_QUEUE
+        self.stableQueue = []
+        self.stableXLQueue = []
+        self.dalleQueue = []
+        self.vsQueue = []
+        self.rbgQueue = []
+        self.barkQueue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
         if c.channel == self.BOT_CHANNEL:
@@ -44,11 +40,12 @@ class ChatCommands(commands.Cog):
             return False
 
     @commands.hybrid_command(
-        name="stable",
-        aliases=["sd"],
-        description="Old jank Stable Diffusion, guaranteed a laugh.",
+        name="sd",
+        description="Stable Diffusion - Old jank Stable Diffusion, guaranteed a laugh.",
     )
-    async def StableDiff(self, ctx: commands.Context, prompt: str) -> None:
+    async def StableDiff(
+        self, ctx: commands.Context, prompt: str, negative: str = None
+    ) -> None:
         if not await self.checkChannel(ctx):
             return
 
@@ -72,7 +69,7 @@ class ChatCommands(commands.Cog):
             await sleep(1)
 
         try:
-            out = await stableDiff(prompt)
+            out = await stableDiff(prompt, negative)
         except Exception as e:
             self.stableQueue.pop(0)
             await ctx.reply(f"stable diff: {e}")
@@ -92,11 +89,12 @@ class ChatCommands(commands.Cog):
         await storedMsg.delete()
 
     @commands.hybrid_command(
-        name="stablexl",
-        aliases=["sdx"],
-        description="Beefier version of Stable Diffusion",
+        name="sdx",
+        description="Stable Diffusion XL - Beefier version of Stable Diffusion",
     )
-    async def StableDiffXL(self, ctx: commands.Context, prompt: str) -> None:
+    async def StableDiffXL(
+        self, ctx: commands.Context, prompt: str, negative: str = None
+    ) -> None:
         if not await self.checkChannel(ctx):
             return
 
@@ -109,9 +107,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the stable XL command")
 
         storedMsg: discord.Message = None
-        if len(self.stableQueue) > 1:
+        if len(self.stableXLQueue) > 1:
             storedMsg = await ctx.reply(
-                f"in queue {len(self.stableQueue) - 1}", ephemeral=True
+                f"in queue {len(self.stableXLQueue) - 1}", ephemeral=True
             )
         else:
             storedMsg = await ctx.reply("Generating", ephemeral=True)
@@ -120,7 +118,7 @@ class ChatCommands(commands.Cog):
             await sleep(1)
 
         try:
-            out = await Stable_XL(prompt)
+            out = await Stable_XL(prompt, negative)
         except Exception as e:
             self.stableXLQueue.pop(0)
             await ctx.reply(f"stable XL: {e}")
@@ -141,7 +139,7 @@ class ChatCommands(commands.Cog):
 
     @commands.hybrid_command(
         name="dalle",
-        description="one of the very first image gens, very jank",
+        description="Dalle - one of the very first image gens, very jank",
     )
     async def Dalle(self, ctx: commands.Context, prompt: str) -> None:
         if not await self.checkChannel(ctx):
@@ -187,7 +185,7 @@ class ChatCommands(commands.Cog):
         await storedMsg.delete()
 
     @commands.hybrid_command(
-        name="voicesynth", aliases=["vs"], description="make an AI say funny things"
+        name="vs", description="Voice Synth - Make an AI say funny things"
     )
     async def VoiceSynth(self, ctx: commands.Context, prompt: str) -> None:
         if not await self.checkChannel(ctx):
@@ -236,7 +234,130 @@ class ChatCommands(commands.Cog):
             await ctx.reply(f"voice synth: {e}")
             return
 
-    @commands.hybrid_command(aliases=["bond", "bp"], description="Get the current price for a bond on Old School RuneScape")
+    @commands.hybrid_command(
+        name="bark", description="Bark Voice Synth - Make an AI say funny things"
+    )
+    async def BarkVoiceSynth(self, ctx: commands.Context, prompt: str) -> None:
+        if not await self.checkChannel(ctx):
+            return
+
+        queueSha = getSha256(prompt)
+        self.barkQueue.append(queueSha)
+
+        await self.DEBUG_CHANNEL.send(
+            f"{curTime()}  -  {ctx.author} used the bark voice synth command\n\n{prompt[:100]}"
+        )
+        print(f"{curTime()}  -  {ctx.author} used the bark voice synth command")
+
+        storedMsg: discord.Message = None
+        if len(self.barkQueue) > 1:
+            storedMsg = await ctx.reply(
+                f"in queue {len(self.barkQueue) - 1}", ephemeral=True
+            )
+        else:
+            storedMsg = await ctx.reply("Generating", ephemeral=True)
+
+        while self.barkQueue[0] != queueSha:
+            await sleep(1)
+
+        try:
+            out, voice = await barkVoiceSynthFunc(prompt)
+        except Exception as e:
+            self.barkQueue.pop(0)
+            await ctx.reply(f"bark Voice Synth: {e}")
+            await storedMsg.delete()
+            return
+
+        if len(prompt) > 1500:
+            prompt = ""
+        try:
+            async with ctx.typing():
+                with open(out, "rb") as f:
+                    _name = path.basename(out)
+                    file = discord.File(f, filename=_name)
+                    await ctx.reply(f"# bark Voice Synth: {prompt}\n{voice}", file=file)
+                remove(out)
+                self.barkQueue.pop(0)
+        except Exception as e:
+            self.barkQueue.pop(0)
+            remove(out)
+            await ctx.reply(f"bark voice synth: {e}")
+            return
+
+    @commands.hybrid_command(
+        name="rbg",
+        description="Remove Background - Removes the background from an image",
+    )
+    async def remBg(
+        self,
+        ctx: commands.Context,
+        image: discord.Attachment = None,
+        imageurl: str = None,
+    ):
+        if not await self.checkChannel(ctx):
+            return
+
+        if not image and not imageurl:
+            await ctx.reply(
+                "Need an image.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
+
+        if image:
+            img = image.url
+        elif imageurl:
+            img = imageurl
+
+        if not img.startswith("http"):
+            await ctx.reply(
+                "Not a valid URL.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
+
+        queueSha = getSha256(img)
+        self.rbgQueue.append(queueSha)
+
+        await self.DEBUG_CHANNEL.send(
+            f"{curTime()}  -  {ctx.author} used the Remove Background command"
+        )
+        print(f"{curTime()}  -  {ctx.author} used the Remove Background command")
+
+        storedMsg: discord.Message = None
+        if len(self.rbgQueue) > 1:
+            storedMsg = await ctx.reply(
+                f"in queue {len(self.rbgQueue) - 1}", ephemeral=True
+            )
+        else:
+            storedMsg = await ctx.reply("Working", ephemeral=True)
+
+        while self.rbgQueue[0] != queueSha:
+            await sleep(1)
+
+        try:
+            out = await RemoveBackGroundFunction(img)
+        except Exception as e:
+            self.rbgQueue.pop(0)
+            await ctx.reply(f"rbg: {e}")
+            await storedMsg.delete()
+            return
+
+        async with ctx.typing():
+            self.rbgQueue.pop(0)
+            with open(out, "rb") as f:
+                file = discord.File(f, filename=f"{getSha256(f)}.png")
+            await ctx.reply("# Remove Background: ", file=file)
+            remove(out)
+
+        await storedMsg.delete()
+
+    @commands.hybrid_command(
+        name="bp",
+        description="Bond Price (OSRS) - Get the current price for a bond on Old School RuneScape",
+    )
     async def bondprice(self, ctx: commands.Context):
         if not await self.checkChannel(ctx):
             return
@@ -272,7 +393,10 @@ class ChatCommands(commands.Cog):
             )
             await ctx.reply(embed=embed)
 
-    @commands.hybrid_command(aliases=["tp"], description="Get the current token price for World of Warcraft, Both NA and EU for both Classic and Retail.")
+    @commands.hybrid_command(
+        name="tp",
+        description="Token Price - Get the current token price for World of Warcraft.",
+    )
     async def tokenprice(self, ctx: commands.Context):
         if not await self.checkChannel(ctx):
             return

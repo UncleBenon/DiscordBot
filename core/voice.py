@@ -2,10 +2,9 @@ from playwright.async_api import async_playwright
 from asyncio import sleep, get_running_loop
 from concurrent.futures import ThreadPoolExecutor
 from core.sha import getSha256
+from core.misc import convertAsync
 import requests
 import os
-import ffmpeg
-import random
 
 PATH = 'temp'
 async def voiceSynthFunction(prompt : str, debug = False) -> str:
@@ -74,30 +73,3 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
     fullPath = await convertAsync(fullPath)
 
     return fullPath
-
-async def convertAsync(filePath : str, outputFileType : str = ".mp4") -> str:
-    def convert() -> str:
-        out = filePath.split(".")
-
-        assert len(out) > 1
-        assert outputFileType.startswith(".")
-
-        outFilePath = out[0] + outputFileType
-
-        imgs = []
-        for (dirPath, _, fileNames) in os.walk("core/ffmpegimgs/"):
-            for file in fileNames:
-                imgs.append(dirPath + file)
-
-        img = ffmpeg.input(random.choice(imgs), loop=1)
-        sound = ffmpeg.input(filePath)
-
-        ffmpeg.output(img.video, sound.audio, outFilePath, shortest=None).run(quiet=True)
-
-        os.remove(filePath)
-        return outFilePath
-
-    with ThreadPoolExecutor(1) as exe:
-        _loop = get_running_loop()
-        content = await _loop.run_in_executor(exe, convert)
-    return content
