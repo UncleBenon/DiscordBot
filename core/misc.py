@@ -4,8 +4,7 @@ STABLE_QUEUE = []
 STABLE_XL_QUEUE = []
 DALLE_QUEUE = []
 VS_QUEUE = []
-SM_QUEUE = []
-SA_QUEUE = []
+BARK_QUEUE = []
 
 def curTime() -> str:
     now = datetime.now()
