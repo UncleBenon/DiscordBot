@@ -28,6 +28,7 @@ Street Fighter 6: Drive Rush Edition
 with Godot 4.3
 with Flux AI
 with Python
+with TypeScript
 with C++
 with HTML / CSS
 with C
@@ -35,3 +36,8 @@ with NodeJS
 Reviving Concord
 Nintendo Lawsuit Simulator
 Tekken 8: MTX Edition
+Elden Ring: Seamless Co-op
+Dark Souls Prepare to Die: Seamless Co-op
+Dark Souls 2 Scholar of the First Sin: Seamless Co-op
+Dark Souls 3: Seamless Co-op
+Elden Ring: Nightreign
