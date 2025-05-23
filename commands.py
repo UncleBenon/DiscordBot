@@ -494,7 +494,7 @@ class ChatCommands(commands.Cog):
         name="sa",
         description="Stable Audio - Generate silly audio with an AI.",
     )
-    async def stableaudio(self, ctx, prompt, negative):
+    async def stableaudio(self, ctx, prompt, negative = None):
         if not await self.checkChannel(ctx):
             return
 
