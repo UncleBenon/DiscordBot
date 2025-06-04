@@ -23,7 +23,8 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
             await sleep(10)
             await page.goto("https://fishaudio-fish-speech-1.hf.space")
 
-        await page.goto("https://fishaudio-fish-speech-1.hf.space/?__theme=light")
+        #await page.goto("https://fishaudio-fish-speech-1.hf.space/?__theme=light")
+        await page.goto("https://fishaudio-openaudio-s1-mini.hf.space/?__theme=dark")
 
         await sleep(3)
 
