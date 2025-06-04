@@ -51,6 +51,8 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
                 _cc = 0
             if await page.get_by_text("no audio").is_visible():
                 raise Exception("no audio generated, dunno why lmao")
+            if await page.get_by_text("404").is_visible():
+                raise Exception("it's dead jim. :pensive:")
 
         links = await page.locator('a').all()
         for out in links[::-1]:
