@@ -28,6 +28,8 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
 
         await sleep(3)
 
+        await page.locator("#component-9 > div.wrap.svelte-1kajgn1 > div.head.svelte-1kajgn1 > div > input").fill(400)
+
         await page.get_by_placeholder("Put your text here.").fill(prompt)
 
         await sleep(1)
