@@ -28,7 +28,7 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
 
         await sleep(3)
 
-        await page.locator("#component-9 > div.wrap.svelte-1kajgn1 > div.head.svelte-1kajgn1 > div > input").fill("400")
+        await page.locator("#component-9 > div.wrap.svelte-1kajgn1 > div.head.svelte-1kajgn1 > div > input").fill("500")
 
         await page.get_by_placeholder("Put your text here.").fill(prompt)
 
@@ -54,8 +54,6 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
                 _cc = 0
             if await page.get_by_text("no audio").is_visible():
                 raise Exception("no audio generated, dunno why lmao")
-            if await page.get_by_text("404").is_visible():
-                raise Exception("it's dead jim. :pensive:")
 
         links = await page.locator('a').all()
         for out in links[::-1]:
