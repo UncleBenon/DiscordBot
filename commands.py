@@ -56,7 +56,7 @@ class ChatCommands(commands.Cog):
         self.stableQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the stable diff command\n\n{prompt[:100]}"
+            f"{curTime()}  -  {ctx.author} used the stable diff command\n\n{prompt[:1000]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the stable diff command")
 
@@ -105,7 +105,7 @@ class ChatCommands(commands.Cog):
         self.stableXLQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the stable XL command\n\n{prompt[:100]}"
+            f"{curTime()}  -  {ctx.author} used the stable XL command\n\n{prompt[:1000]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the stable XL command")
 
@@ -152,7 +152,7 @@ class ChatCommands(commands.Cog):
         self.dalleQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Dalle command\n\n{prompt[:100]}"
+            f"{curTime()}  -  {ctx.author} used the Dalle command\n\n{prompt[:1000]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Dalle command")
 
@@ -198,7 +198,7 @@ class ChatCommands(commands.Cog):
         self.vsQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the voice synth command\n\n{prompt[:100]}"
+            f"{curTime()}  -  {ctx.author} used the voice synth command\n\n{prompt[:1000]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the voice synth command")
 
@@ -249,7 +249,7 @@ class ChatCommands(commands.Cog):
         self.barkQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Bark voice synth command\n\n{prompt[:100]}"
+            f"{curTime()}  -  {ctx.author} used the Bark voice synth command\n\n{prompt[:1000]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Bark voice synth command")
 
@@ -450,7 +450,7 @@ class ChatCommands(commands.Cog):
         self.smQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Stable Music command\n\n{prompt[:100]}"
+            f"{curTime()}  -  {ctx.author} used the Stable Music command\n\n{prompt[:1000]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Stable Music command")
 
@@ -502,7 +502,7 @@ class ChatCommands(commands.Cog):
         self.saQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Stable Audio command\n\n{prompt[:100]}"
+            f"{curTime()}  -  {ctx.author} used the Stable Audio command\n\n{prompt[:1000]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Stable Audio command")
 
