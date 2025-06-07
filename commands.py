@@ -29,7 +29,7 @@ class ChatCommands(commands.Cog):
         self.barkQueue = []
         self.smQueue = []
         self.saQueue = []
-        self.fluxQueue = []
+        self.ghibliQueue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
         if c.channel == self.BOT_CHANNEL:
@@ -444,7 +444,7 @@ class ChatCommands(commands.Cog):
         name="sm",
         description="Stable Music - Generate silly music with an AI.",
     )
-    async def stablemusic(self, ctx, prompt, negative = None):
+    async def stablemusic(self, ctx, prompt, negative=None):
         if not await self.checkChannel(ctx):
             return
 
@@ -496,7 +496,7 @@ class ChatCommands(commands.Cog):
         name="sa",
         description="Stable Audio - Generate silly audio with an AI.",
     )
-    async def stableaudio(self, ctx, prompt, negative = None):
+    async def stableaudio(self, ctx, prompt, negative=None):
         if not await self.checkChannel(ctx):
             return
 
@@ -545,54 +545,71 @@ class ChatCommands(commands.Cog):
             return
 
     @commands.hybrid_command(
-        name="flux",
-        description="Flux - Generate silly pictures with the beefiest model.",
+        name="ghibli",
+        description="Ghiblify - You should have seen this already.",
     )
-    async def fluxCommand(self, ctx, prompt):
+    async def ghibliCommand(
+        self,
+        ctx: commands.Context,
+        image: discord.Attachment = None,
+        imageurl: str = None,
+    ):
         if not await self.checkChannel(ctx):
             return
 
-        queueSha = getSha256(prompt)
-        self.fluxQueue.append(queueSha)
+        if not image and not imageurl:
+            await ctx.reply(
+                "Need an image.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
+
+        if image:
+            img = image.url
+        elif imageurl:
+            img = imageurl
+
+        if not img.startswith("http"):
+            await ctx.reply(
+                "Not a valid URL.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
+
+        queueSha = getSha256(img)
+        self.ghibliQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Flux command\n\n{prompt[:1000]}"
+            f"{curTime()}  -  {ctx.author} used the Ghiblify command"
         )
-        print(f"{curTime()}  -  {ctx.author} used the Flux command")
+        print(f"{curTime()}  -  {ctx.author} used the Ghiblify command")
 
         storedMsg: discord.Message = None
-        if len(self.fluxQueue) > 1:
+        if len(self.ghibliQueue) > 1:
             storedMsg = await ctx.reply(
-                f"in queue {len(self.fluxQueue) - 1}", ephemeral=True
+                f"in queue {len(self.ghibliQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
+            storedMsg = await ctx.reply("Working", ephemeral=True)
 
-        while self.fluxQueue[0] != queueSha:
+        while self.ghibliQueue[0] != queueSha:
             await sleep(1)
 
         try:
-            out = await fluxMasterFunction(prompt)
+            out = await RemoveBackGroundFunction(img)
         except Exception as e:
-            self.fluxQueue.pop(0)
-            await ctx.reply(f"Flux: {e}")
+            self.ghibliQueue.pop(0)
+            await ctx.reply(f"rbg: {e}")
             await storedMsg.delete()
             return
 
-        if len(prompt) > 1500:
-            prompt = ""
-        try:
-            await storedMsg.delete()
-            async with ctx.typing():
-                with open(out, "rb") as f:
-                    _name = path.basename(out)
-                    file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Flux: {prompt}", file=file)
-                remove(out)
-                self.fluxQueue.pop(0)
-        except Exception as e:
-            self.fluxQueue.pop(0)
+        async with ctx.typing():
+            self.ghibliQueue.pop(0)
+            with open(out, "rb") as f:
+                file = discord.File(f, filename=f"{getSha256(f)}.webp")
+            await ctx.reply("# Ghiblify: ", file=file)
             remove(out)
-            await ctx.reply(f"Flux: {e}")
-            return
 
+        await storedMsg.delete()
