@@ -10,7 +10,7 @@ from core.bark import barkVoiceSynthFunc
 from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
 from core.removebg import RemoveBackGroundFunction
-from core.flux_new import fluxMasterFunction
+from core.ghiblify import ghiblifyFunction
 from asyncio import sleep
 from discord.ext import commands
 import discord
@@ -598,7 +598,7 @@ class ChatCommands(commands.Cog):
             await sleep(1)
 
         try:
-            out = await RemoveBackGroundFunction(img)
+            out = await ghiblifyFunction(img)
         except Exception as e:
             self.ghibliQueue.pop(0)
             await ctx.reply(f"rbg: {e}")
