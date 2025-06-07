@@ -601,7 +601,7 @@ class ChatCommands(commands.Cog):
             out = await ghiblifyFunction(img)
         except Exception as e:
             self.ghibliQueue.pop(0)
-            await ctx.reply(f"rbg: {e}")
+            await ctx.reply(f"Ghiblify: {e}")
             await storedMsg.delete()
             return
 
