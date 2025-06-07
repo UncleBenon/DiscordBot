@@ -10,6 +10,7 @@ from core.bark import barkVoiceSynthFunc
 from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
 from core.removebg import RemoveBackGroundFunction
+from core.flux_new import fluxMasterFunction
 from asyncio import sleep
 from discord.ext import commands
 import discord
@@ -28,6 +29,7 @@ class ChatCommands(commands.Cog):
         self.barkQueue = []
         self.smQueue = []
         self.saQueue = []
+        self.fluxQueue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
         if c.channel == self.BOT_CHANNEL:
@@ -541,3 +543,56 @@ class ChatCommands(commands.Cog):
             remove(out)
             await ctx.reply(f"Stable Audio: {e}")
             return
+
+    @commands.hybrid_command(
+        name="flux",
+        description="Flux - Generate silly pictures with the beefiest model.",
+    )
+    async def fluxCommand(self, ctx, prompt):
+        if not await self.checkChannel(ctx):
+            return
+
+        queueSha = getSha256(prompt)
+        self.fluxQueue.append(queueSha)
+
+        await self.DEBUG_CHANNEL.send(
+            f"{curTime()}  -  {ctx.author} used the Stable Audio command\n\n{prompt[:1000]}"
+        )
+        print(f"{curTime()}  -  {ctx.author} used the Stable Audio command")
+
+        storedMsg: discord.Message = None
+        if len(self.fluxQueue) > 1:
+            storedMsg = await ctx.reply(
+                f"in queue {len(self.fluxQueue) - 1}", ephemeral=True
+            )
+        else:
+            storedMsg = await ctx.reply("Generating", ephemeral=True)
+
+        while self.fluxQueue[0] != queueSha:
+            await sleep(1)
+
+        try:
+            out = await fluxMasterFunction(prompt)
+        except Exception as e:
+            self.fluxQueue.pop(0)
+            await ctx.reply(f"Stable Audio: {e}")
+            await storedMsg.delete()
+            return
+
+        if len(prompt) > 1500:
+            prompt = ""
+        try:
+            await storedMsg.delete()
+            async with ctx.typing():
+                with open(out, "rb") as f:
+                    _name = path.basename(out)
+                    file = discord.File(f, filename=_name)
+                    await ctx.reply(f"# Stable Audio: {prompt}", file=file)
+                remove(out)
+                self.fluxQueue.pop(0)
+        except Exception as e:
+            self.fluxQueue.pop(0)
+            remove(out)
+            await ctx.reply(f"Stable Audio: {e}")
+            return
+
