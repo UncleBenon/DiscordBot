@@ -609,7 +609,7 @@ class ChatCommands(commands.Cog):
             self.ghibliQueue.pop(0)
             with open(out, "rb") as f:
                 file = discord.File(f, filename=f"{getSha256(f)}.webp")
-            await ctx.reply("# Ghiblify: ", file=file)
+            await ctx.reply(f"# Ghiblify: \n{img}", file=file)
             remove(out)
 
         await storedMsg.delete()
