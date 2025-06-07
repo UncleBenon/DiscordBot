@@ -61,5 +61,6 @@ async def ghiblifyFunction(inp: str, DEBUG=False):
     fullPath = os.path.join(PATH, filename)
     with open(fullPath, 'wb') as f:
         f.write(file)
+    os.remove(inp)
 
     return fullPath
