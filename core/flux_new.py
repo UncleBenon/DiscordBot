@@ -9,6 +9,10 @@ url = "https://nihalgazi-flux-pro-unlimited.hf.space/"
 DIR_PATH = "temp"
 async def fluxMasterFunction(prompt : str, DEBUG = False):
     async with async_playwright() as p:
+        _textArea = "#component-2 > label > div > textarea"
+        _button = "#component-8"
+        _img = "#component-9 > div.image-container.svelte-dpdy90 > button > div > img"
+
         driver = await p.firefox.launch(headless = not DEBUG)
         page = await driver.new_page()
         await page.goto(url)
@@ -23,12 +27,11 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
 
         await sleep(1)
 
-        await page.get_by_placeholder("Enter a your image prompt").fill(prompt)
-        await page.get_by_role("button", name="Generate").click()
+        await page.locator(_textArea).fill(prompt)
+        await page.locator(_button).click()
 
         _cc = 0
         _error = 0
-        _img = "#component-9 > div.image-container.svelte-dpdy90 > button > div > img"
         while not await page.locator(_img).is_visible():
             await sleep(1)
             _cc += 1
@@ -39,7 +42,7 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
                     raise Exception("Error!")
                 _cc = 0
                 _error += 1
-                await page.get_by_role("button", name="Generate").click()
+                await page.locator(_button).click()
 
         found = await page.query_selector_all('img')
 
