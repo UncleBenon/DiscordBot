@@ -2,6 +2,7 @@ from playwright.async_api import async_playwright
 from hashlib import sha256
 from requests import get
 from asyncio import sleep
+from core.removebg import downloadImage
 import os
 
 PATH = "temp"
@@ -11,6 +12,8 @@ async def ghiblifyFunction(inp: str, DEBUG=False):
     _uploadButton = "#component-4 > div.image-container.svelte-1hdlew6 > div.upload-container.svelte-1hdlew6.reduced-height > button"
     _generateButton = "#component-5"
     _img = "#component-7 > div.image-container.svelte-zxsjoa > button > div > img"
+
+    _, inp = await downloadImage(inp)
 
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not DEBUG)
