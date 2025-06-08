@@ -11,6 +11,7 @@ from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
 from core.removebg import RemoveBackGroundFunction
 from core.ghiblify import ghiblifyFunction
+from core.video_gen import vgMasterFunction
 from asyncio import sleep
 from discord.ext import commands
 import discord
@@ -29,6 +30,7 @@ class ChatCommands(commands.Cog):
         self.barkQueue = []
         self.smQueue = []
         self.saQueue = []
+        self.vgQueue = []
         self.ghibliQueue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
@@ -58,7 +60,7 @@ class ChatCommands(commands.Cog):
         self.stableQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the stable diff command\n\n{prompt[:1000]}"
+            f"{curTime()}  -  {ctx.author} used the stable diff command\n\n{prompt[:1500]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the stable diff command")
 
@@ -107,7 +109,7 @@ class ChatCommands(commands.Cog):
         self.stableXLQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the stable XL command\n\n{prompt[:1000]}"
+            f"{curTime()}  -  {ctx.author} used the stable XL command\n\n{prompt[:1500]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the stable XL command")
 
@@ -154,7 +156,7 @@ class ChatCommands(commands.Cog):
         self.dalleQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Dalle command\n\n{prompt[:1000]}"
+            f"{curTime()}  -  {ctx.author} used the Dalle command\n\n{prompt[:1500]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Dalle command")
 
@@ -200,7 +202,7 @@ class ChatCommands(commands.Cog):
         self.vsQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the voice synth command\n\n{prompt[:1000]}"
+            f"{curTime()}  -  {ctx.author} used the voice synth command\n\n{prompt[:1500]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the voice synth command")
 
@@ -251,7 +253,7 @@ class ChatCommands(commands.Cog):
         self.barkQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Bark voice synth command\n\n{prompt[:1000]}"
+            f"{curTime()}  -  {ctx.author} used the Bark voice synth command\n\n{prompt[:1500]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Bark voice synth command")
 
@@ -452,7 +454,7 @@ class ChatCommands(commands.Cog):
         self.smQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Stable Music command\n\n{prompt[:1000]}"
+            f"{curTime()}  -  {ctx.author} used the Stable Music command\n\n{prompt[:1500]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Stable Music command")
 
@@ -504,7 +506,7 @@ class ChatCommands(commands.Cog):
         self.saQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Stable Audio command\n\n{prompt[:1000]}"
+            f"{curTime()}  -  {ctx.author} used the Stable Audio command\n\n{prompt[:1500]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Stable Audio command")
 
@@ -613,3 +615,54 @@ class ChatCommands(commands.Cog):
             remove(out)
 
         await storedMsg.delete()
+
+    @commands.hybrid_command(
+        name="vg", description="Video Gen - Make the AI Generate funny videos"
+    )
+    async def vgCommandd(self, ctx: commands.Context, prompt: str) -> None:
+        if not await self.checkChannel(ctx):
+            return
+
+        queueSha = getSha256(prompt)
+        self.vgQueue.append(queueSha)
+
+        await self.DEBUG_CHANNEL.send(
+            f"{curTime()}  -  {ctx.author} used the video gen command\n\n{prompt[:1500]}"
+        )
+        print(f"{curTime()}  -  {ctx.author} used the video gen command")
+
+        storedMsg: discord.Message = None
+        if len(self.vgQueue) > 1:
+            storedMsg = await ctx.reply(
+                f"in queue {len(self.vgQueue) - 1}", ephemeral=True
+            )
+        else:
+            storedMsg = await ctx.reply("Generating", ephemeral=True)
+
+        while self.vgQueue[0] != queueSha:
+            await sleep(1)
+
+        try:
+            out = await voiceSynthFunction(prompt)
+        except Exception as e:
+            self.vgQueue.pop(0)
+            await ctx.reply(f"video gen: {e}")
+            await storedMsg.delete()
+            return
+
+        if len(prompt) > 1500:
+            prompt = ""
+        try:
+            await storedMsg.delete()
+            async with ctx.typing():
+                with open(out, "rb") as f:
+                    _name = path.basename(out)
+                    file = discord.File(f, filename=_name)
+                    await ctx.reply(f"# video gen: {prompt}", file=file)
+                remove(out)
+                self.vgQueue.pop(0)
+        except Exception as e:
+            self.vgQueue.pop(0)
+            remove(out)
+            await ctx.reply(f"video gen: {e}")
+            return
