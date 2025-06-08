@@ -643,7 +643,7 @@ class ChatCommands(commands.Cog):
             await sleep(1)
 
         try:
-            out = await voiceSynthFunction(prompt)
+            out = await vgMasterFunction(prompt)
         except Exception as e:
             self.vgQueue.pop(0)
             await ctx.reply(f"video gen: {e}")
