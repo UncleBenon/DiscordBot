@@ -47,15 +47,15 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
             if await page.get_by_text("Error").first.is_visible():
                 if _errorforce >= 10:
                     raise Exception("Error!")
-                if await page.get_by_text("CUDA error: device-side assert triggered CUDA kernel errors").is_visible():
-                    raise Exception("CUDA kernel errors")
-                if await page.get_by_text("CUDA out of memory.").is_visible():
-                    raise Exception("CUDA out of memory")
                 await page.get_by_role("button", name="🎧 Generate").click()
                 _errorforce += 1
                 _cc = 0
             if await page.get_by_text("no audio").is_visible():
                 raise Exception("no audio generated, dunno why lmao")
+            if await page.get_by_text("CUDA error: device-side assert triggered CUDA kernel errors").is_visible():
+                raise Exception("CUDA kernel errors")
+            if await page.get_by_text("CUDA out of memory.").is_visible():
+                raise Exception("CUDA out of memory")
 
         links = await page.locator('a').all()
         for out in links[::-1]:
