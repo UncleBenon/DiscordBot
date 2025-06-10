@@ -680,9 +680,9 @@ class ChatCommands(commands.Cog):
         self.fluxQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the flux command\n\n{prompt[:1500]}"
+            f"{curTime()}  -  {ctx.author} used the Flux command\n\n{prompt[:1500]}"
         )
-        print(f"{curTime()}  -  {ctx.author} used the flux command")
+        print(f"{curTime()}  -  {ctx.author} used the Flux command")
 
         storedMsg: discord.Message = None
         if len(self.fluxQueue) > 1:
@@ -699,7 +699,7 @@ class ChatCommands(commands.Cog):
             out = await fluxMasterFunction(prompt)
         except Exception as e:
             self.fluxQueue.pop(0)
-            await ctx.reply(f"flux: {e}")
+            await ctx.reply(f"Flux: {e}")
             await storedMsg.delete()
             return
 
@@ -711,11 +711,11 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# flux: {prompt}", file=file)
+                    await ctx.reply(f"# Flux: {prompt}", file=file)
                 remove(out)
                 self.fluxQueue.pop(0)
         except Exception as e:
             self.fluxQueue.pop(0)
             remove(out)
-            await ctx.reply(f"flux: {e}")
+            await ctx.reply(f"Flux: {e}")
             return
