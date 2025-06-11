@@ -9,9 +9,9 @@ URL = "https://agents-mcp-hackathon-ai-marketing-content-creator.hf.space/"
 DIR_PATH = "temp"
 
 async def fluxMasterFunction(prompt : str, DEBUG = False):
-    _promptInput = "#component-27 > label > div > textarea"
+    _promptInput = "#component-44 > label > div > textarea"
     _genButton = "#component-49"
-    _image = "#component-37 > div.image-container.svelte-zxsjoa > button > div > img"
+    _image = "#component-54 > div.image-container.svelte-zxsjoa > button > div > img"
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless = not DEBUG)
         page = await driver.new_page()
