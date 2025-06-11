@@ -24,7 +24,7 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
         if await page.get_by_text("Your space is in error").is_visible():
             raise Exception("Space is having errors, not the bot's fault")
 
-        await page.locator("#component-24-button").click()
+        await page.locator("#component-41-button").click()
         await sleep(1)
         await page.locator(_promptInput).fill(prompt)
         await page.locator(_genButton).click()
