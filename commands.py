@@ -1,8 +1,7 @@
 from os import path, remove
 from core.misc import curTime
 from core.sha import getSha256
-from core.CORE import stableDiff, stableMusic
-from core.audioldm import stableaudioLDM
+from core.stableDiff import stableDiff
 from core.SDXL_Google import Stable_XL
 from core.dalle import dalle
 from core.voice import voiceSynthFunction
@@ -443,110 +442,6 @@ class ChatCommands(commands.Cog):
             embed.add_field(name="Retail:", value=f":coin: {tprice[1]}", inline=True)
             embed.add_field(name="Classic:", value=f":coin: {tprice[3]}", inline=True)
             await ctx.reply(embed=embed)
-
-    @commands.hybrid_command(
-        name="sm",
-        description="Stable Music - Generate silly music with an AI.",
-    )
-    async def stablemusic(self, ctx, prompt, negative=None):
-        if not await self.checkChannel(ctx):
-            return
-
-        queueSha = getSha256(prompt)
-        self.smQueue.append(queueSha)
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Stable Music command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the Stable Music command")
-
-        storedMsg: discord.Message = None
-        if len(self.smQueue) > 1:
-            storedMsg = await ctx.reply(
-                f"in queue {len(self.smQueue) - 1}", ephemeral=True
-            )
-        else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
-
-        while self.smQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await stableMusic(prompt, negative)
-        except Exception as e:
-            self.smQueue.pop(0)
-            await ctx.reply(f"Stable Music: {e}")
-            await storedMsg.delete()
-            return
-
-        if len(prompt) > 1500:
-            prompt = ""
-        try:
-            await storedMsg.delete()
-            async with ctx.typing():
-                with open(out, "rb") as f:
-                    _name = path.basename(out)
-                    file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Stable Music: {prompt}", file=file)
-                remove(out)
-                self.smQueue.pop(0)
-        except Exception as e:
-            self.smQueue.pop(0)
-            remove(out)
-            await ctx.reply(f"Stable Music: {e}")
-            return
-
-    @commands.hybrid_command(
-        name="sa",
-        description="Stable Audio - Generate silly audio with an AI.",
-    )
-    async def stableaudio(self, ctx, prompt, negative=None):
-        if not await self.checkChannel(ctx):
-            return
-
-        queueSha = getSha256(prompt)
-        self.saQueue.append(queueSha)
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Stable Audio command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the Stable Audio command")
-
-        storedMsg: discord.Message = None
-        if len(self.saQueue) > 1:
-            storedMsg = await ctx.reply(
-                f"in queue {len(self.saQueue) - 1}", ephemeral=True
-            )
-        else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
-
-        while self.saQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await stableaudioLDM(prompt, negative)
-        except Exception as e:
-            self.saQueue.pop(0)
-            await ctx.reply(f"Stable Audio: {e}")
-            await storedMsg.delete()
-            return
-
-        if len(prompt) > 1500:
-            prompt = ""
-        try:
-            await storedMsg.delete()
-            async with ctx.typing():
-                with open(out, "rb") as f:
-                    _name = path.basename(out)
-                    file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Stable Audio: {prompt}", file=file)
-                remove(out)
-                self.saQueue.pop(0)
-        except Exception as e:
-            self.saQueue.pop(0)
-            remove(out)
-            await ctx.reply(f"Stable Audio: {e}")
-            return
 
     @commands.hybrid_command(
         name="ghibli",
