@@ -54,6 +54,9 @@ class ChatCommands(commands.Cog):
     async def StableDiff(
         self, ctx: commands.Context, prompt: str, negative: str = None
     ) -> None:
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -103,6 +106,9 @@ class ChatCommands(commands.Cog):
     async def StableDiffXL(
         self, ctx: commands.Context, prompt: str, negative: str = None
     ) -> None:
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -150,6 +156,9 @@ class ChatCommands(commands.Cog):
         description="Dalle - one of the very first image gens, very jank",
     )
     async def Dalle(self, ctx: commands.Context, prompt: str) -> None:
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -196,6 +205,9 @@ class ChatCommands(commands.Cog):
         name="vs", description="Voice Synth - Make an AI say funny things"
     )
     async def VoiceSynth(self, ctx: commands.Context, prompt: str) -> None:
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -247,6 +259,9 @@ class ChatCommands(commands.Cog):
         name="bark", description="Bark Voice Synth - Make an AI say funny things"
     )
     async def BarkVoiceSynth(self, ctx: commands.Context, prompt: str) -> None:
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -304,6 +319,9 @@ class ChatCommands(commands.Cog):
         image: discord.Attachment = None,
         imageurl: str = None,
     ):
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -369,6 +387,9 @@ class ChatCommands(commands.Cog):
         description="Bond Price (OSRS) - Get the current price for a bond on Old School RuneScape",
     )
     async def bondprice(self, ctx: commands.Context):
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -408,6 +429,9 @@ class ChatCommands(commands.Cog):
         description="Token Price - Get the current token price for World of Warcraft.",
     )
     async def tokenprice(self, ctx: commands.Context):
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -453,6 +477,9 @@ class ChatCommands(commands.Cog):
         image: discord.Attachment = None,
         imageurl: str = None,
     ):
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -517,6 +544,9 @@ class ChatCommands(commands.Cog):
         name="vg", description="Video Gen - Make the AI Generate funny videos"
     )
     async def vgCommandd(self, ctx: commands.Context, prompt: str) -> None:
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
@@ -568,6 +598,9 @@ class ChatCommands(commands.Cog):
         name="flux", description="Flux Image Gen - the beefiest."
     )
     async def fluxCommand(self, ctx: commands.Context, prompt: str) -> None:
+        if not ctx:
+            return
+
         if not await self.checkChannel(ctx):
             return
 
