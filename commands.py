@@ -93,7 +93,7 @@ class ChatCommands(commands.Cog):
             for file in out:
                 with open(file, "rb") as f:
                     files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.reply(f"# Stable Diff: {prompt}", files=files)
+            await ctx.reply(f"# Stable Diff: {prompt}\n{ctx.author.mention}", files=files)
             for f in out:
                 remove(f)
 
@@ -145,7 +145,7 @@ class ChatCommands(commands.Cog):
             for file in out:
                 with open(file, "rb") as f:
                     files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.reply(f"# Stable XL: {prompt}", files=files)
+            await ctx.reply(f"# Stable XL: {prompt}\n{ctx.author.mention}", files=files)
             for f in out:
                 remove(f)
 
@@ -195,7 +195,7 @@ class ChatCommands(commands.Cog):
             for file in out:
                 with open(file, "rb") as f:
                     files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.reply(f"# Dalle: {prompt}", files=files)
+            await ctx.reply(f"# Dalle: {prompt}\n{ctx.author.mention}", files=files)
             for f in out:
                 remove(f)
 
@@ -246,7 +246,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Voice Synth: {prompt}", file=file)
+                    await ctx.reply(f"# Voice Synth: {prompt}\n{ctx.author.mention}", file=file)
                 remove(out)
                 self.vsQueue.pop(0)
         except Exception as e:
@@ -300,7 +300,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Bark Voice Synth: {prompt}\n{voice}", file=file)
+                    await ctx.reply(f"# Bark Voice Synth: {prompt}\n{voice}\n{ctx.author.mention}", file=file)
                 remove(out)
                 self.barkQueue.pop(0)
         except Exception as e:
@@ -377,7 +377,7 @@ class ChatCommands(commands.Cog):
             self.rbgQueue.pop(0)
             with open(out, "rb") as f:
                 file = discord.File(f, filename=f"{getSha256(f)}.png")
-            await ctx.reply("# Remove Background: ", file=file)
+            await ctx.reply("# Remove Background: \n{ctx.author.mention}", file=file)
             remove(out)
 
         await storedMsg.delete()
@@ -535,7 +535,7 @@ class ChatCommands(commands.Cog):
             self.ghibliQueue.pop(0)
             with open(out, "rb") as f:
                 file = discord.File(f, filename=f"{getSha256(f)}.webp")
-            await ctx.reply(f"# Ghiblify: \n{img}", file=file)
+            await ctx.reply(f"# Ghiblify: \n{img}\n{ctx.author.mention}", file=file)
             remove(out)
 
         await storedMsg.delete()
@@ -585,7 +585,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# video gen: {prompt}", file=file)
+                    await ctx.reply(f"# video gen: {prompt}\n{ctx.author.mention}", file=file)
                 remove(out)
                 self.vgQueue.pop(0)
         except Exception as e:
@@ -639,7 +639,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Flux: {prompt}", file=file)
+                    await ctx.reply(f"# Flux: {prompt}\n{ctx.author.mention}", file=file)
                 remove(out)
                 self.fluxQueue.pop(0)
         except Exception as e:
