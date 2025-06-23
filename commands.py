@@ -377,7 +377,7 @@ class ChatCommands(commands.Cog):
             self.rbgQueue.pop(0)
             with open(out, "rb") as f:
                 file = discord.File(f, filename=f"{getSha256(f)}.png")
-            await ctx.reply("# Remove Background: \n{ctx.author.mention}", file=file)
+            await ctx.reply(f"# Remove Background: \n{ctx.author.mention}", file=file)
             remove(out)
 
         await storedMsg.delete()
