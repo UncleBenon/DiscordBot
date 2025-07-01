@@ -5,13 +5,14 @@ from hashlib import sha256
 from asyncio import sleep, get_running_loop
 import os
 
-URL = "https://agents-mcp-hackathon-ai-marketing-content-creator.hf.space/"
+URL = "https://nihalgazi-flux-pro-unlimited.hf.space/"
 DIR_PATH = "temp"
 
 async def fluxMasterFunction(prompt : str, DEBUG = False):
-    _promptInput = "#component-44 > label > div > textarea"
-    _genButton = "#component-49"
-    _image = "#component-54 > div.image-container.svelte-zxsjoa > button > div > img"
+    _promptInput = "#component-2 > label > div > textarea"
+    _genButton = "#component-8"
+    _image = "#component-9 > div.image-container.svelte-zxsjoa > button > div > img"
+
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless = not DEBUG)
         page = await driver.new_page()
@@ -24,9 +25,8 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
         if await page.get_by_text("Your space is in error").is_visible():
             raise Exception("Space is having errors, not the bot's fault")
 
-        await page.locator("#component-41-button").click()
-        await sleep(1)
         await page.locator(_promptInput).fill(prompt)
+        await sleep(1)
         await page.locator(_genButton).click()
 
         _cc = 0
@@ -34,7 +34,7 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
         while not await page.locator(_image).is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 600:
+            if _cc >= 300:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
                 if _error >= 10:
@@ -61,3 +61,8 @@ async def fluxMasterFunction(prompt : str, DEBUG = False):
         f.write(file)
 
     return fullPath
+
+if __name__ == "__main__":
+    from asyncio import run
+    test = run(fluxMasterFunction("Boris Johnson doing the floss", True))
+    print(test)
