@@ -16,7 +16,10 @@ async def on_ready() -> None:
     with open("inc/vidya.txt") as f:
         vidya = f.readlines()
         await BOT.change_presence(status=discord.Status.dnd,activity=discord.Game(random.choice(vidya)))
-    synced = await BOT.tree.sync()
+    try:
+        synced = await BOT.tree.sync()
+    except Exception as e:
+        print(curTime(), e)
     await DEBUG_CHANNEL.send("----------------------------------------------------------------------")
     await DEBUG_CHANNEL.send(f'{name} Online!\t-\tPing: {int(BOT.latency * 1000)}ms\t-\tSynced functions: {len(synced)}')
     print(f'{curTime()}', f'{name} Online',f'Ping: {int(BOT.latency * 1000)}ms', f'synced functions: {len(synced)}', sep="  -  ")
