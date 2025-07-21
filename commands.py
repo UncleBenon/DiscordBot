@@ -656,11 +656,11 @@ class ChatCommands(commands.Cog):
         name="dream", description="Dream Image Gen - like flux, pretty beefy.."
     )
     @app_commands.choices(resolution=[
-        app_commands.choice(name="1:1", value=0),
-        app_commands.choice(name="3:4", value=1),
-        app_commands.choice(name="4:3", value=2),
-        app_commands.choice(name="9:16", value=3),
-        app_commands.choice(name="16:9", value=4),
+        app_commands.Choice(name="1:1", value=0),
+        app_commands.Choice(name="3:4", value=1),
+        app_commands.Choice(name="4:3", value=2),
+        app_commands.Choice(name="9:16", value=3),
+        app_commands.Choice(name="16:9", value=4),
     ])
     async def dreamCommand(self, ctx: commands.Context, prompt: str, resolution : int) -> None:
         if not ctx:
