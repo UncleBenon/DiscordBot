@@ -662,7 +662,7 @@ class ChatCommands(commands.Cog):
         app_commands.Choice(name="9:16", value=3),
         app_commands.Choice(name="16:9", value=4),
     ])
-    async def dreamCommand(self, ctx: commands.Context, prompt: str, resolution : int) -> None:
+    async def dreamCommand(self, ctx: commands.Context, prompt: str, resolution : int = 2) -> None:
         if not ctx:
             return
 
