@@ -655,14 +655,14 @@ class ChatCommands(commands.Cog):
     @commands.hybrid_command(
         name="dream", description="Dream Image Gen - like flux, pretty beefy.."
     )
-    @app_commands.choices(resolution=[
-        app_commands.Choice(name="1:1", value=0),
-        app_commands.Choice(name="3:4", value=1),
-        app_commands.Choice(name="4:3", value=2),
-        app_commands.Choice(name="9:16", value=3),
-        app_commands.Choice(name="16:9", value=4),
+    @app_commands.choices(size=[
+        app_commands.Choice(name="1:1", value="0"),
+        app_commands.Choice(name="3:4", value="1"),
+        app_commands.Choice(name="4:3", value="2"),
+        app_commands.Choice(name="9:16", value="3"),
+        app_commands.Choice(name="16:9", value="4"),
     ])
-    async def dreamCommand(self, ctx: commands.Context, prompt: str, resolution : int) -> None:
+    async def dreamCommand(self, ctx: commands.Context, prompt: str, size: str) -> None:
         if not ctx:
             return
 
@@ -673,7 +673,7 @@ class ChatCommands(commands.Cog):
         self.dreamQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Dream command\n\n{prompt[:1500]}"
+            f"{curTime()}  -  {ctx.author} used the Dream command\nSize: {size}\n\n{prompt[:1500]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Dream command")
 
@@ -689,7 +689,7 @@ class ChatCommands(commands.Cog):
             await sleep(1)
 
         try:
-            out = await dreamMasterFunc(prompt, resolution)
+            out = await dreamMasterFunc(prompt, str(size))
         except Exception as e:
             self.dreamQueue.pop(0)
             await ctx.reply(f"Dream: {e}")
