@@ -40,6 +40,7 @@ async def dreamMasterFunc(prompt : str, res : int, DEBUG = False):
             case _:
                 pass
 
+        await sleep(1)
         await page.locator(_promptInput).fill(prompt)
         await sleep(1)
         await page.locator(_genButton).click()
