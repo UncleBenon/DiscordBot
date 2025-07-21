@@ -52,8 +52,7 @@ async def dreamMasterFunc(prompt : str, res : int, DEBUG = False):
             if _cc >= 300:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
-                if _error >= 10:
-                    print(await page.get_by_text("Error").first.all_text_contents())
+                if _error >= 30:
                     raise Exception("Error!")
                 _cc = 0
                 _error += 1
