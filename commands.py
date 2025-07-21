@@ -689,7 +689,7 @@ class ChatCommands(commands.Cog):
             await sleep(1)
 
         try:
-            out = await dreamMasterFunc(prompt, str(size))
+            out = await dreamMasterFunc(prompt, int(size))
         except Exception as e:
             self.dreamQueue.pop(0)
             await ctx.reply(f"Dream: {e}")
