@@ -11,7 +11,6 @@ from core.OSRS import getBondPriceOSRS
 from core.removebg import RemoveBackGroundFunction
 from core.ghiblify import ghiblifyFunction
 from core.video_gen import vgMasterFunction
-from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
 from asyncio import sleep
 from discord.ext import commands
@@ -34,7 +33,6 @@ class ChatCommands(commands.Cog):
         self.saQueue = []
         self.vgQueue = []
         self.ghibliQueue = []
-        self.fluxQueue = []
         self.dreamQueue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
@@ -598,62 +596,7 @@ class ChatCommands(commands.Cog):
             return
 
     @commands.hybrid_command(
-        name="flux", description="Flux Image Gen - the beefiest."
-    )
-    async def fluxCommand(self, ctx: commands.Context, prompt: str) -> None:
-        if not ctx:
-            return
-
-        if not await self.checkChannel(ctx):
-            return
-
-        queueSha = getSha256(prompt)
-        self.fluxQueue.append(queueSha)
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Flux command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the Flux command")
-
-        storedMsg: discord.Message = None
-        if len(self.fluxQueue) > 1:
-            storedMsg = await ctx.reply(
-                f"in queue {len(self.fluxQueue) - 1}", ephemeral=True
-            )
-        else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
-
-        while self.fluxQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await fluxMasterFunction(prompt)
-        except Exception as e:
-            self.fluxQueue.pop(0)
-            await ctx.reply(f"Flux: {e}")
-            await storedMsg.delete()
-            return
-
-        if len(prompt) > 1500:
-            prompt = ""
-        try:
-            await storedMsg.delete()
-            async with ctx.typing():
-                with open(out, "rb") as f:
-                    _name = path.basename(out)
-                    file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Flux: {prompt}\n{ctx.author.mention}", file=file)
-                remove(out)
-                self.fluxQueue.pop(0)
-        except Exception as e:
-            self.fluxQueue.pop(0)
-            remove(out)
-            await ctx.reply(f"Flux: {e}")
-            return
-
-
-    @commands.hybrid_command(
-        name="dream", description="Dream Image Gen - like flux, pretty beefy.."
+        name="dream", description="Dream Image Gen - pretty beefy.."
     )
     @app_commands.choices(size=[
         app_commands.Choice(name="1:1", value="0"),
