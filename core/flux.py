@@ -5,13 +5,13 @@ from hashlib import sha256
 from asyncio import sleep, get_running_loop
 import os
 
-URL = "https://dev6655-flux.hf.space/"
+URL = "https://llamameta-fake-flux-pro-unlimited.hf.space/"
 DIR_PATH = "temp"
 
 async def fluxMasterFunction(prompt : str, DEBUG = False):
-    _promptInput = "#component-4 > label > div > input"
-    _genButton = "#component-5"
-    _image = "#component-6 > div.image-container.svelte-w225pd > button > div > img"
+    _promptInput = "#component-2 > label > div > textarea"
+    _genButton = "#component-4"
+    _image = "#component-5 > div.image-container.svelte-zxsjoa > button > div > img"
 
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless = not DEBUG)
