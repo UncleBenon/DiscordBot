@@ -13,9 +13,6 @@ async def on_ready() -> None:
     BOT_CHANNEL = BOT.get_channel(1048600881593061416)
     DEBUG_CHANNEL = BOT.get_channel(1048564475659288666)
     await BOT.add_cog(ChatCommands(BOT, BOT_CHANNEL, DEBUG_CHANNEL))
-    with open("inc/vidya.txt") as f:
-        vidya = f.readlines()
-        await BOT.change_presence(status=discord.Status.dnd,activity=discord.Game(random.choice(vidya)))
     try:
         synced = await BOT.tree.sync()
     except Exception as e:
@@ -23,6 +20,9 @@ async def on_ready() -> None:
     await DEBUG_CHANNEL.send("----------------------------------------------------------------------")
     await DEBUG_CHANNEL.send(f'{name} Online!\t-\tPing: {int(BOT.latency * 1000)}ms\t-\tSynced functions: {len(synced)}')
     print(f'{curTime()}', f'{name} Online',f'Ping: {int(BOT.latency * 1000)}ms', f'synced functions: {len(synced)}', sep="  -  ")
+    with open("inc/vidya.txt") as f:
+        vidya = f.readlines()
+        await BOT.change_presence(status=discord.Status.dnd,activity=discord.Game(random.choice(vidya)))
 
 @BOT.listen()
 async def on_resumed() -> None:
