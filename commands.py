@@ -730,7 +730,7 @@ class ChatCommands(commands.Cog):
         self.twitVidQueue.append(queueSha)
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the TwitVid command"
+            f"{curTime()}  -  {ctx.author} used the TwitVid command\n<{url}>"
         )
         print(f"{curTime()}  -  {ctx.author} used the TwitVid command")
 
