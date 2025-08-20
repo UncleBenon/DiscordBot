@@ -716,7 +716,7 @@ class ChatCommands(commands.Cog):
             return
 
     @commands.hybrid_command(
-        name="TwitVid",
+        name="Twitvid",
         description="Downloads a video of twitter, if i did this correctly.",
     )
     async def twitvidcommand(self, ctx : commands.Context, url : str):
