@@ -768,4 +768,3 @@ class ChatCommands(commands.Cog):
             remove(out)
             await ctx.reply(f"TwitVid: {e}")
             return
-

@@ -7,8 +7,8 @@ import os
 DIR_PATH = "temp"
 
 async def downloadTwitterVideoFunction(URL):
-    if URL.startswith(r"https://x.com/"):
-        URL = URL.replace(r"x.com", r"api.vxtwitter.com")
+    if URL.startswith("https://x.com/"):
+        URL = URL.replace("x.com", "api.vxtwitter.com")
     else :
         raise Exception("Invalid Link.")
 
