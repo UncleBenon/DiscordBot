@@ -13,7 +13,7 @@ from core.ghiblify import ghiblifyFunction
 from core.video_gen import vgMasterFunction
 from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
-from core.twitter_download import downloadTwitterVideoFunction
+from core.twitterDownload import downloadTwitterVideoFunction
 from asyncio import sleep
 from discord.ext import commands
 from discord import app_commands
@@ -743,7 +743,6 @@ class ChatCommands(commands.Cog):
             storedMsg = await ctx.reply("Fetching", ephemeral=True)
 
         while self.twitVidQueue[0] != queueSha:
-            print("Skibidi")
             await sleep(1)
 
         try:
