@@ -13,6 +13,7 @@ from core.ghiblify import ghiblifyFunction
 from core.video_gen import vgMasterFunction
 from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
+from core.twitter_download import downloadTwitterVideoFunction
 from asyncio import sleep
 from discord.ext import commands
 from discord import app_commands
@@ -36,6 +37,7 @@ class ChatCommands(commands.Cog):
         self.ghibliQueue = []
         self.fluxQueue = []
         self.dreamQueue = []
+        self.twitVidQueue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
         if c.channel == self.BOT_CHANNEL:
@@ -712,3 +714,57 @@ class ChatCommands(commands.Cog):
             remove(out)
             await ctx.reply(f"Dream: {e}")
             return
+
+    @commands.hybrid_command(
+        name="TwitVid",
+        description="Downloads a video of twitter, if i did this correctly.",
+    )
+    async def twitvidcommand(self, ctx : commands.Context, url : str):
+        if not ctx:
+            return
+
+        if not await self.checkChannel(ctx):
+            return
+
+        queueSha = getSha256(url)
+        self.twitVidQueue.append(queueSha)
+
+        await self.DEBUG_CHANNEL.send(
+            f"{curTime()}  -  {ctx.author} used the TwitVid command"
+        )
+        print(f"{curTime()}  -  {ctx.author} used the TwitVid command")
+
+        storedMsg: discord.Message = None
+        if len(self.twitVidQueue) > 1:
+            storedMsg = await ctx.reply(
+                f"in queue {len(self.twitVidQueue) - 1}", ephemeral=True
+            )
+        else:
+            storedMsg = await ctx.reply("Generating", ephemeral=True)
+
+        while self.twitVidQueue[0] != queueSha:
+            await sleep(1)
+
+        try:
+            out = await downloadTwitterVideoFunction(url)
+        except Exception as e:
+            self.twitVidQueue.pop(0)
+            await ctx.reply(f"TwitVid: {e}")
+            await storedMsg.delete()
+            return
+
+        try:
+            await storedMsg.delete()
+            async with ctx.typing():
+                with open(out, "rb") as f:
+                    _name = path.basename(out)
+                    file = discord.File(f, filename=_name)
+                    await ctx.reply(f"# TwitVid: {ctx.author.mention}", file=file)
+                remove(out)
+                self.twitVidQueue.pop(0)
+        except Exception as e:
+            self.twitVidQueue.pop(0)
+            remove(out)
+            await ctx.reply(f"TwitVid: {e}")
+            return
+
