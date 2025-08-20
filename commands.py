@@ -740,13 +740,14 @@ class ChatCommands(commands.Cog):
                 f"in queue {len(self.twitVidQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
+            storedMsg = await ctx.reply("Fetching", ephemeral=True)
 
         while self.twitVidQueue[0] != queueSha:
             await sleep(1)
 
         try:
             out = await downloadTwitterVideoFunction(url)
+            print(out)
         except Exception as e:
             self.twitVidQueue.pop(0)
             await ctx.reply(f"TwitVid: {e}")
@@ -759,7 +760,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# TwitVid: {ctx.author.mention}", file=file)
+                    await ctx.reply(f"# TwitVid: {url}\n{ctx.author.mention}", file=file)
                 remove(out)
                 self.twitVidQueue.pop(0)
         except Exception as e:
