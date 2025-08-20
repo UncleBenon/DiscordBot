@@ -743,11 +743,11 @@ class ChatCommands(commands.Cog):
             storedMsg = await ctx.reply("Fetching", ephemeral=True)
 
         while self.twitVidQueue[0] != queueSha:
+            print("Skibidi")
             await sleep(1)
 
         try:
             out = await downloadTwitterVideoFunction(url)
-            print(out)
         except Exception as e:
             self.twitVidQueue.pop(0)
             await ctx.reply(f"TwitVid: {e}")
