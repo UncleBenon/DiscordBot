@@ -12,8 +12,8 @@ async def downloadTwitterVideoFunction(URL):
 
     URL = URL.replace("x.com", "api.vxtwitter.com")
 
+    _loop = get_running_loop()
     with ThreadPoolExecutor(1) as exe:
-        _loop = get_running_loop()
         page = await _loop.run_in_executor(exe, get, URL)
 
     if page.status_code != 200:
@@ -26,7 +26,6 @@ async def downloadTwitterVideoFunction(URL):
         raise Exception("File not found.")
 
     with ThreadPoolExecutor(1) as exe:
-        _loop = get_running_loop()
         file = await _loop.run_in_executor(exe, get, mediaUrl)
 
     if file.status_code != 200:
