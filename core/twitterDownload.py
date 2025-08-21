@@ -13,6 +13,7 @@ async def downloadTwitterVideoFunction(URL):
     URL = URL.replace("x.com", "api.vxtwitter.com")
 
     _loop = get_running_loop()
+
     with ThreadPoolExecutor(1) as exe:
         page = await _loop.run_in_executor(exe, get, URL)
 
