@@ -759,7 +759,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# TwitVid: {url}\n{ctx.author.mention}", file=file)
+                    await ctx.reply(f"# TwitVid: <{url}>\n{ctx.author.mention}", file=file)
                 remove(out)
                 self.twitVidQueue.pop(0)
         except Exception as e:
