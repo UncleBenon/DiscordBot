@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from asyncio import get_running_loop
 from hashlib import sha256
 from requests import get
+from functools import partial
 import os
 
 DIR_PATH = "temp"
@@ -12,10 +13,7 @@ async def downloadTwitterVideoFunction(URL):
 
     URL = URL.replace("x.com", "api.vxtwitter.com")
 
-    _loop = get_running_loop()
-
-    with ThreadPoolExecutor(1) as exe:
-        page = await _loop.run_in_executor(exe, get, URL)
+    page = get(URL)
 
     if page.status_code != 200:
         raise Exception(f"Page failed to load. {page.status_code}")
@@ -27,8 +25,9 @@ async def downloadTwitterVideoFunction(URL):
         raise Exception("File not found.")
 
     fileType = mediaUrl.split(".")[-1]
+    _loop = get_running_loop()
     with ThreadPoolExecutor(1) as exe:
-        file = await _loop.run_in_executor(exe, get, URL)
+        file = await _loop.run_in_executor(exe, partial(get, mediaUrl, stream=True))
 
     if file.status_code != 200:
         raise Exception("File failed to download.")
