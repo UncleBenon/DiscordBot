@@ -5,12 +5,10 @@ from core.stableDiff import stableDiff
 from core.SDXL_Google import Stable_XL
 from core.dalle import dalle
 from core.voice import voiceSynthFunction
-from core.bark import barkVoiceSynthFunc
 from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
 from core.removebg import RemoveBackGroundFunction
 from core.ghiblify import ghiblifyFunction
-from core.video_gen import vgMasterFunction
 from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
 from core.twitterDownload import downloadTwitterVideoFunction
@@ -30,10 +28,8 @@ class ChatCommands(commands.Cog):
         self.dalleQueue = []
         self.vsQueue = []
         self.rbgQueue = []
-        self.barkQueue = []
         self.smQueue = []
         self.saQueue = []
-        self.vgQueue = []
         self.ghibliQueue = []
         self.fluxQueue = []
         self.dreamQueue = []
@@ -98,7 +94,9 @@ class ChatCommands(commands.Cog):
             for file in out:
                 with open(file, "rb") as f:
                     files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.reply(f"# Stable Diff: {prompt}\n{ctx.author.mention}", files=files)
+            await ctx.reply(
+                f"# Stable Diff: {prompt}\n{ctx.author.mention}", files=files
+            )
             for f in out:
                 remove(f)
 
@@ -251,67 +249,15 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Voice Synth: {prompt}\n{ctx.author.mention}", file=file)
+                    await ctx.reply(
+                        f"# Voice Synth: {prompt}\n{ctx.author.mention}", file=file
+                    )
                 remove(out)
                 self.vsQueue.pop(0)
         except Exception as e:
             self.vsQueue.pop(0)
             remove(out)
             await ctx.reply(f"voice synth: {e}")
-            return
-
-    @commands.hybrid_command(
-        name="bark", description="Bark Voice Synth - Make an AI say funny things"
-    )
-    async def BarkVoiceSynth(self, ctx: commands.Context, prompt: str) -> None:
-        if not ctx:
-            return
-
-        if not await self.checkChannel(ctx):
-            return
-
-        queueSha = getSha256(prompt)
-        self.barkQueue.append(queueSha)
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Bark voice synth command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the Bark voice synth command")
-
-        storedMsg: discord.Message = None
-        if len(self.barkQueue) > 1:
-            storedMsg = await ctx.reply(
-                f"in queue {len(self.barkQueue) - 1}", ephemeral=True
-            )
-        else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
-
-        while self.barkQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out, voice = await barkVoiceSynthFunc(prompt)
-        except Exception as e:
-            self.barkQueue.pop(0)
-            await ctx.reply(f"Bark Voice Synth: {e}")
-            await storedMsg.delete()
-            return
-
-        if len(prompt) > 1500:
-            prompt = ""
-        try:
-            async with ctx.typing():
-                await storedMsg.delete()
-                with open(out, "rb") as f:
-                    _name = path.basename(out)
-                    file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Bark Voice Synth: {prompt}\n{voice}\n{ctx.author.mention}", file=file)
-                remove(out)
-                self.barkQueue.pop(0)
-        except Exception as e:
-            self.barkQueue.pop(0)
-            remove(out)
-            await ctx.reply(f"Bark voice synth: {e}")
             return
 
     @commands.hybrid_command(
@@ -545,63 +491,7 @@ class ChatCommands(commands.Cog):
 
         await storedMsg.delete()
 
-    @commands.hybrid_command(
-        name="vg", description="Video Gen - Make the AI Generate funny videos"
-    )
-    async def vgCommandd(self, ctx: commands.Context, prompt: str) -> None:
-        if not ctx:
-            return
-
-        if not await self.checkChannel(ctx):
-            return
-
-        queueSha = getSha256(prompt)
-        self.vgQueue.append(queueSha)
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the video gen command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the video gen command")
-
-        storedMsg: discord.Message = None
-        if len(self.vgQueue) > 1:
-            storedMsg = await ctx.reply(
-                f"in queue {len(self.vgQueue) - 1}", ephemeral=True
-            )
-        else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
-
-        while self.vgQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await vgMasterFunction(prompt)
-        except Exception as e:
-            self.vgQueue.pop(0)
-            await ctx.reply(f"video gen: {e}")
-            await storedMsg.delete()
-            return
-
-        if len(prompt) > 1500:
-            prompt = ""
-        try:
-            await storedMsg.delete()
-            async with ctx.typing():
-                with open(out, "rb") as f:
-                    _name = path.basename(out)
-                    file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# video gen: {prompt}\n{ctx.author.mention}", file=file)
-                remove(out)
-                self.vgQueue.pop(0)
-        except Exception as e:
-            self.vgQueue.pop(0)
-            remove(out)
-            await ctx.reply(f"video gen: {e}")
-            return
-
-    @commands.hybrid_command(
-        name="flux", description="Flux Image Gen - the beefiest."
-    )
+    @commands.hybrid_command(name="flux", description="Flux Image Gen - the beefiest.")
     async def fluxCommand(self, ctx: commands.Context, prompt: str) -> None:
         if not ctx:
             return
@@ -644,7 +534,9 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Flux: {prompt}\n{ctx.author.mention}", file=file)
+                    await ctx.reply(
+                        f"# Flux: {prompt}\n{ctx.author.mention}", file=file
+                    )
                 remove(out)
                 self.fluxQueue.pop(0)
         except Exception as e:
@@ -653,18 +545,21 @@ class ChatCommands(commands.Cog):
             await ctx.reply(f"Flux: {e}")
             return
 
-
     @commands.hybrid_command(
         name="dream", description="Dream Image Gen - like flux, pretty beefy.."
     )
-    @app_commands.choices(size=[
-        app_commands.Choice(name="1:1", value="0"),
-        app_commands.Choice(name="3:4", value="1"),
-        app_commands.Choice(name="4:3", value="2"),
-        app_commands.Choice(name="9:16", value="3"),
-        app_commands.Choice(name="16:9", value="4"),
-    ])
-    async def dreamCommand(self, ctx: commands.Context, prompt: str, size: str = "2") -> None:
+    @app_commands.choices(
+        size=[
+            app_commands.Choice(name="1:1", value="0"),
+            app_commands.Choice(name="3:4", value="1"),
+            app_commands.Choice(name="4:3", value="2"),
+            app_commands.Choice(name="9:16", value="3"),
+            app_commands.Choice(name="16:9", value="4"),
+        ]
+    )
+    async def dreamCommand(
+        self, ctx: commands.Context, prompt: str, size: str = "2"
+    ) -> None:
         if not ctx:
             return
 
@@ -706,7 +601,9 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# Dream: {prompt}\n{ctx.author.mention}", file=file)
+                    await ctx.reply(
+                        f"# Dream: {prompt}\n{ctx.author.mention}", file=file
+                    )
                 remove(out)
                 self.dreamQueue.pop(0)
         except Exception as e:
@@ -719,7 +616,7 @@ class ChatCommands(commands.Cog):
         name="twitvid",
         description="Downloads a video of twitter, if i did this correctly.",
     )
-    async def twitvidcommand(self, ctx : commands.Context, url : str):
+    async def twitvidcommand(self, ctx: commands.Context, url: str):
         if not ctx:
             return
 
@@ -759,7 +656,9 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(f"# TwitVid: <{url}>\n{ctx.author.mention}", file=file)
+                    await ctx.reply(
+                        f"# TwitVid: <{url}>\n{ctx.author.mention}", file=file
+                    )
                 remove(out)
                 self.twitVidQueue.pop(0)
         except Exception as e:
