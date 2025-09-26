@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from playwright.async_api import async_playwright
+from random import randint
 from requests import get
 from hashlib import sha256
 from asyncio import sleep, get_running_loop
@@ -27,7 +28,7 @@ async def dreamMasterFunc(prompt : str, res : int, DEBUG = False):
             raise Exception("Space is having errors, not the bot's fault")
 
         await sleep(1)
-        await page.locator(_seed).fill("-1")
+        await page.locator(_seed).fill(str(randint(0, 1000000000000)))
 
         await sleep(1)
         match res:
