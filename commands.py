@@ -69,13 +69,10 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the stable diff command")
 
-        storedMsg: discord.Message = None
         if len(self.stableQueue) > 1:
-            storedMsg = await ctx.send(
-                f"in queue {len(self.stableQueue) - 1}", ephemeral=True
-            )
+            await ctx.send(f"in queue {len(self.stableQueue) - 1}", ephemeral=True)
         else:
-            storedMsg = await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True)
 
         while self.stableQueue[0] != queueSha:
             await sleep(1)
@@ -85,7 +82,6 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.stableQueue.pop(0)
             await ctx.send(f"stable diff: {e}")
-            await storedMsg.delete()
             return
 
         async with ctx.typing():
@@ -99,8 +95,6 @@ class ChatCommands(commands.Cog):
             )
             for f in out:
                 remove(f)
-
-        await storedMsg.delete()
 
     @commands.hybrid_command(
         name="sdx",
@@ -123,13 +117,10 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the stable XL command")
 
-        storedMsg: discord.Message = None
         if len(self.stableXLQueue) > 1:
-            storedMsg = await ctx.send(
-                f"in queue {len(self.stableXLQueue) - 1}", ephemeral=True
-            )
+            await ctx.send(f"in queue {len(self.stableXLQueue) - 1}", ephemeral=True)
         else:
-            storedMsg = await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True)
 
         while self.stableXLQueue[0] != queueSha:
             await sleep(1)
@@ -139,7 +130,6 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.stableXLQueue.pop(0)
             await ctx.send(f"stable XL: {e}")
-            await storedMsg.delete()
             return
 
         async with ctx.typing():
@@ -151,8 +141,6 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"# Stable XL: {prompt}\n{ctx.author.mention}", files=files)
             for f in out:
                 remove(f)
-
-        await storedMsg.delete()
 
     @commands.hybrid_command(
         name="dalle",
@@ -173,13 +161,10 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Dalle command")
 
-        storedMsg: discord.Message = None
         if len(self.dalleQueue) > 1:
-            storedMsg = await ctx.send(
-                f"in queue {len(self.dalleQueue) - 1}", ephemeral=True
-            )
+            await ctx.send(f"in queue {len(self.dalleQueue) - 1}", ephemeral=True)
         else:
-            storedMsg = await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True)
 
         while self.dalleQueue[0] != queueSha:
             await sleep(1)
@@ -189,7 +174,6 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.dalleQueue.pop(0)
             await ctx.send(f"dalle: {e}")
-            await storedMsg.delete()
             return
 
         async with ctx.typing():
@@ -201,8 +185,6 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"# Dalle: {prompt}\n{ctx.author.mention}", files=files)
             for f in out:
                 remove(f)
-
-        await storedMsg.delete()
 
     @commands.hybrid_command(
         name="vs", description="Voice Synth - Make an AI say funny things"
@@ -222,13 +204,10 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the voice synth command")
 
-        storedMsg: discord.Message = None
         if len(self.vsQueue) > 1:
-            storedMsg = await ctx.send(
-                f"in queue {len(self.vsQueue) - 1}", ephemeral=True
-            )
+            await ctx.send(f"in queue {len(self.vsQueue) - 1}", ephemeral=True)
         else:
-            storedMsg = await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True)
 
         while self.vsQueue[0] != queueSha:
             await sleep(1)
@@ -238,13 +217,11 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.vsQueue.pop(0)
             await ctx.send(f"Voice Synth: {e}")
-            await storedMsg.delete()
             return
 
         if len(prompt) > 1500:
             prompt = ""
         try:
-            await storedMsg.delete()
             async with ctx.typing():
                 with open(out, "rb") as f:
                     _name = path.basename(out)
@@ -305,13 +282,10 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Remove Background command")
 
-        storedMsg: discord.Message = None
         if len(self.rbgQueue) > 1:
-            storedMsg = await ctx.send(
-                f"in queue {len(self.rbgQueue) - 1}", ephemeral=True
-            )
+            await ctx.send(f"in queue {len(self.rbgQueue) - 1}", ephemeral=True)
         else:
-            storedMsg = await ctx.send("Working", ephemeral=True)
+            await ctx.send("Working", ephemeral=True)
 
         while self.rbgQueue[0] != queueSha:
             await sleep(1)
@@ -321,7 +295,6 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.rbgQueue.pop(0)
             await ctx.send(f"rbg: {e}")
-            await storedMsg.delete()
             return
 
         async with ctx.typing():
@@ -330,8 +303,6 @@ class ChatCommands(commands.Cog):
                 file = discord.File(f, filename=f"{getSha256(f)}.png")
             await ctx.send(f"# Remove Background: \n{ctx.author.mention}", file=file)
             remove(out)
-
-        await storedMsg.delete()
 
     @commands.hybrid_command(
         name="bp",
@@ -463,13 +434,10 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Ghiblify command")
 
-        storedMsg: discord.Message = None
         if len(self.ghibliQueue) > 1:
-            storedMsg = await ctx.send(
-                f"in queue {len(self.ghibliQueue) - 1}", ephemeral=True
-            )
+            await ctx.send(f"in queue {len(self.ghibliQueue) - 1}", ephemeral=True)
         else:
-            storedMsg = await ctx.send("Working", ephemeral=True)
+            await ctx.send("Working", ephemeral=True)
 
         while self.ghibliQueue[0] != queueSha:
             await sleep(1)
@@ -479,7 +447,6 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.ghibliQueue.pop(0)
             await ctx.send(f"Ghiblify: {e}")
-            await storedMsg.delete()
             return
 
         async with ctx.typing():
@@ -488,8 +455,6 @@ class ChatCommands(commands.Cog):
                 file = discord.File(f, filename=f"{getSha256(f)}.webp")
             await ctx.send(f"# Ghiblify: \n{img}\n{ctx.author.mention}", file=file)
             remove(out)
-
-        await storedMsg.delete()
 
     @commands.hybrid_command(name="flux", description="Flux Image Gen - the beefiest.")
     async def fluxCommand(self, ctx: commands.Context, prompt: str) -> None:
@@ -507,13 +472,10 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Flux command")
 
-        storedMsg: discord.Message = None
         if len(self.fluxQueue) > 1:
-            storedMsg = await ctx.send(
-                f"in queue {len(self.fluxQueue) - 1}", ephemeral=True
-            )
+            await ctx.send(f"in queue {len(self.fluxQueue) - 1}", ephemeral=True)
         else:
-            storedMsg = await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True)
 
         while self.fluxQueue[0] != queueSha:
             await sleep(1)
@@ -523,20 +485,16 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.fluxQueue.pop(0)
             await ctx.send(f"Flux: {e}")
-            await storedMsg.delete()
             return
 
         if len(prompt) > 1500:
             prompt = ""
         try:
-            await storedMsg.delete()
             async with ctx.typing():
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.send(
-                        f"# Flux: {prompt}\n{ctx.author.mention}", file=file
-                    )
+                    await ctx.send(f"# Flux: {prompt}\n{ctx.author.mention}", file=file)
                 remove(out)
                 self.fluxQueue.pop(0)
         except Exception as e:
@@ -574,13 +532,10 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Dream command")
 
-        storedMsg: discord.Message = None
         if len(self.dreamQueue) > 1:
-            storedMsg = await ctx.send(
-                f"in queue {len(self.dreamQueue) - 1}", ephemeral=True
-            )
+            await ctx.send(f"in queue {len(self.dreamQueue) - 1}", ephemeral=True)
         else:
-            storedMsg = await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True)
 
         while self.dreamQueue[0] != queueSha:
             await sleep(1)
@@ -590,13 +545,11 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.dreamQueue.pop(0)
             await ctx.send(f"Dream: {e}")
-            await storedMsg.delete()
             return
 
         if len(prompt) > 1500:
             prompt = ""
         try:
-            await storedMsg.delete()
             async with ctx.typing():
                 with open(out, "rb") as f:
                     _name = path.basename(out)
@@ -631,13 +584,10 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the TwitVid command")
 
-        storedMsg: discord.Message = None
         if len(self.twitVidQueue) > 1:
-            storedMsg = await ctx.send(
-                f"in queue {len(self.twitVidQueue) - 1}", ephemeral=True
-            )
+            await ctx.send(f"in queue {len(self.twitVidQueue) - 1}", ephemeral=True)
         else:
-            storedMsg = await ctx.send("Fetching", ephemeral=True)
+            await ctx.send("Fetching", ephemeral=True)
 
         while self.twitVidQueue[0] != queueSha:
             await sleep(1)
@@ -647,11 +597,9 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.twitVidQueue.pop(0)
             await ctx.send(f"TwitVid: {e}")
-            await storedMsg.delete()
             return
 
         try:
-            await storedMsg.delete()
             async with ctx.typing():
                 with open(out, "rb") as f:
                     _name = path.basename(out)
