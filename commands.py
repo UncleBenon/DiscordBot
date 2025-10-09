@@ -61,9 +61,6 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
-        queueSha = getSha256(prompt)
-        self.stableQueue.append(queueSha)
-
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the stable diff command\n\n{prompt[:1500]}"
         )
@@ -73,6 +70,9 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"in queue {len(self.stableQueue) - 1}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
+
+        queueSha = getSha256(prompt)
+        self.stableQueue.append(queueSha)
 
         while self.stableQueue[0] != queueSha:
             await sleep(1)
@@ -109,9 +109,6 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
-        queueSha = getSha256(prompt)
-        self.stableXLQueue.append(queueSha)
-
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the stable XL command\n\n{prompt[:1500]}"
         )
@@ -121,6 +118,9 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"in queue {len(self.stableXLQueue) - 1}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
+
+        queueSha = getSha256(prompt)
+        self.stableXLQueue.append(queueSha)
 
         while self.stableXLQueue[0] != queueSha:
             await sleep(1)
@@ -153,9 +153,6 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
-        queueSha = getSha256(prompt)
-        self.dalleQueue.append(queueSha)
-
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the Dalle command\n\n{prompt[:1500]}"
         )
@@ -165,6 +162,9 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"in queue {len(self.dalleQueue) - 1}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
+
+        queueSha = getSha256(prompt)
+        self.dalleQueue.append(queueSha)
 
         while self.dalleQueue[0] != queueSha:
             await sleep(1)
@@ -196,9 +196,6 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
-        queueSha = getSha256(prompt)
-        self.vsQueue.append(queueSha)
-
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the voice synth command\n\n{prompt[:1500]}"
         )
@@ -208,6 +205,9 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"in queue {len(self.vsQueue) - 1}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
+
+        queueSha = getSha256(prompt)
+        self.vsQueue.append(queueSha)
 
         while self.vsQueue[0] != queueSha:
             await sleep(1)
@@ -272,9 +272,6 @@ class ChatCommands(commands.Cog):
             )
             return
 
-        queueSha = getSha256(img)
-        self.rbgQueue.append(queueSha)
-
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the Remove Background command"
         )
@@ -284,6 +281,9 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"in queue {len(self.rbgQueue) - 1}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Working", ephemeral=True, delete_after=60)
+
+        queueSha = getSha256(img)
+        self.rbgQueue.append(queueSha)
 
         while self.rbgQueue[0] != queueSha:
             await sleep(1)
@@ -422,9 +422,6 @@ class ChatCommands(commands.Cog):
             )
             return
 
-        queueSha = getSha256(img)
-        self.ghibliQueue.append(queueSha)
-
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the Ghiblify command"
         )
@@ -434,6 +431,9 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"in queue {len(self.ghibliQueue) - 1}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Working", ephemeral=True, delete_after=60)
+
+        queueSha = getSha256(img)
+        self.ghibliQueue.append(queueSha)
 
         while self.ghibliQueue[0] != queueSha:
             await sleep(1)
@@ -460,9 +460,6 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
-        queueSha = getSha256(prompt)
-        self.fluxQueue.append(queueSha)
-
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the Flux command\n\n{prompt[:1500]}"
         )
@@ -472,6 +469,9 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"in queue {len(self.fluxQueue) - 1}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
+
+        queueSha = getSha256(prompt)
+        self.fluxQueue.append(queueSha)
 
         while self.fluxQueue[0] != queueSha:
             await sleep(1)
@@ -520,9 +520,6 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
-        queueSha = getSha256(prompt)
-        self.dreamQueue.append(queueSha)
-
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the Dream command\nSize: {size}\n\n{prompt[:1500]}"
         )
@@ -532,6 +529,9 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"in queue {len(self.dreamQueue) - 1}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
+
+        queueSha = getSha256(prompt)
+        self.dreamQueue.append(queueSha)
 
         while self.dreamQueue[0] != queueSha:
             await sleep(1)
@@ -572,9 +572,6 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
-        queueSha = getSha256(url)
-        self.twitVidQueue.append(queueSha)
-
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the TwitVid command\n<{url}>"
         )
@@ -584,6 +581,9 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"in queue {len(self.twitVidQueue) - 1}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Fetching", ephemeral=True, delete_after=60)
+
+        queueSha = getSha256(url)
+        self.twitVidQueue.append(queueSha)
 
         while self.twitVidQueue[0] != queueSha:
             await sleep(1)
