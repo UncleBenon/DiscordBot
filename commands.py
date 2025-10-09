@@ -66,8 +66,8 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the stable diff command")
 
-        if len(self.stableQueue) > 1:
-            await ctx.send(f"in queue {len(self.stableQueue) - 1}", ephemeral=True, delete_after=60)
+        if len(self.stableQueue) > 0:
+            await ctx.send(f"in queue {len(self.stableQueue)}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
 
@@ -114,8 +114,8 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the stable XL command")
 
-        if len(self.stableXLQueue) > 1:
-            await ctx.send(f"in queue {len(self.stableXLQueue) - 1}", ephemeral=True, delete_after=60)
+        if len(self.stableXLQueue) > 0:
+            await ctx.send(f"in queue {len(self.stableXLQueue)}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
 
@@ -158,8 +158,8 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Dalle command")
 
-        if len(self.dalleQueue) > 1:
-            await ctx.send(f"in queue {len(self.dalleQueue) - 1}", ephemeral=True, delete_after=60)
+        if len(self.dalleQueue) > 0:
+            await ctx.send(f"in queue {len(self.dalleQueue)}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
 
@@ -201,8 +201,8 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the voice synth command")
 
-        if len(self.vsQueue) > 1:
-            await ctx.send(f"in queue {len(self.vsQueue) - 1}", ephemeral=True, delete_after=60)
+        if len(self.vsQueue) > 0:
+            await ctx.send(f"in queue {len(self.vsQueue)}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
 
@@ -277,8 +277,8 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Remove Background command")
 
-        if len(self.rbgQueue) > 1:
-            await ctx.send(f"in queue {len(self.rbgQueue) - 1}", ephemeral=True, delete_after=60)
+        if len(self.rbgQueue) > 0:
+            await ctx.send(f"in queue {len(self.rbgQueue)}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Working", ephemeral=True, delete_after=60)
 
@@ -427,8 +427,8 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Ghiblify command")
 
-        if len(self.ghibliQueue) > 1:
-            await ctx.send(f"in queue {len(self.ghibliQueue) - 1}", ephemeral=True, delete_after=60)
+        if len(self.ghibliQueue) > 0:
+            await ctx.send(f"in queue {len(self.ghibliQueue)}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Working", ephemeral=True, delete_after=60)
 
@@ -465,8 +465,8 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Flux command")
 
-        if len(self.fluxQueue) > 1:
-            await ctx.send(f"in queue {len(self.fluxQueue) - 1}", ephemeral=True, delete_after=60)
+        if len(self.fluxQueue) > 0:
+            await ctx.send(f"in queue {len(self.fluxQueue)}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
 
@@ -525,8 +525,8 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Dream command")
 
-        if len(self.dreamQueue) > 1:
-            await ctx.send(f"in queue {len(self.dreamQueue) - 1}", ephemeral=True, delete_after=60)
+        if len(self.dreamQueue) > 0:
+            await ctx.send(f"in queue {len(self.dreamQueue)}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Generating", ephemeral=True, delete_after=60)
 
@@ -577,8 +577,8 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the TwitVid command")
 
-        if len(self.twitVidQueue) > 1:
-            await ctx.send(f"in queue {len(self.twitVidQueue) - 1}", ephemeral=True, delete_after=60)
+        if len(self.twitVidQueue) > 0:
+            await ctx.send(f"in queue {len(self.twitVidQueue)}", ephemeral=True, delete_after=60)
         else:
             await ctx.send("Fetching", ephemeral=True, delete_after=60)
 
