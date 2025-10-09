@@ -40,7 +40,7 @@ class ChatCommands(commands.Cog):
             return True
         else:
             await c.send(
-                "Use bot commands in the bot channel!", ephemeral=True, delete_after=10
+                "Use bot commands in the bot channel!", ephemeral=True, delete_after=60
             )
             try:
                 await c.message.delete()
@@ -70,9 +70,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the stable diff command")
 
         if len(self.stableQueue) > 1:
-            await ctx.send(f"in queue {len(self.stableQueue) - 1}", ephemeral=True)
+            await ctx.send(f"in queue {len(self.stableQueue) - 1}", ephemeral=True, delete_after=60)
         else:
-            await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True, delete_after=60)
 
         while self.stableQueue[0] != queueSha:
             await sleep(1)
@@ -118,9 +118,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the stable XL command")
 
         if len(self.stableXLQueue) > 1:
-            await ctx.send(f"in queue {len(self.stableXLQueue) - 1}", ephemeral=True)
+            await ctx.send(f"in queue {len(self.stableXLQueue) - 1}", ephemeral=True, delete_after=60)
         else:
-            await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True, delete_after=60)
 
         while self.stableXLQueue[0] != queueSha:
             await sleep(1)
@@ -162,9 +162,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the Dalle command")
 
         if len(self.dalleQueue) > 1:
-            await ctx.send(f"in queue {len(self.dalleQueue) - 1}", ephemeral=True)
+            await ctx.send(f"in queue {len(self.dalleQueue) - 1}", ephemeral=True, delete_after=60)
         else:
-            await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True, delete_after=60)
 
         while self.dalleQueue[0] != queueSha:
             await sleep(1)
@@ -205,9 +205,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the voice synth command")
 
         if len(self.vsQueue) > 1:
-            await ctx.send(f"in queue {len(self.vsQueue) - 1}", ephemeral=True)
+            await ctx.send(f"in queue {len(self.vsQueue) - 1}", ephemeral=True, delete_after=60)
         else:
-            await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True, delete_after=60)
 
         while self.vsQueue[0] != queueSha:
             await sleep(1)
@@ -256,8 +256,7 @@ class ChatCommands(commands.Cog):
         if not image and not imageurl:
             await ctx.send(
                 "Need an image.",
-                ephemeral=True,
-                delete_after=10,
+                ephemeral=True, delete_after=60,
             )
             return
 
@@ -269,8 +268,7 @@ class ChatCommands(commands.Cog):
         if not img.startswith("http"):
             await ctx.send(
                 "Not a valid URL.",
-                ephemeral=True,
-                delete_after=10,
+                ephemeral=True, delete_after=60,
             )
             return
 
@@ -283,9 +281,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the Remove Background command")
 
         if len(self.rbgQueue) > 1:
-            await ctx.send(f"in queue {len(self.rbgQueue) - 1}", ephemeral=True)
+            await ctx.send(f"in queue {len(self.rbgQueue) - 1}", ephemeral=True, delete_after=60)
         else:
-            await ctx.send("Working", ephemeral=True)
+            await ctx.send("Working", ephemeral=True, delete_after=60)
 
         while self.rbgQueue[0] != queueSha:
             await sleep(1)
@@ -320,7 +318,7 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Bond Price (OSRS) command")
 
-        await ctx.send("fetching", ephemeral=True, delete_after=10)
+        await ctx.send("fetching", ephemeral=True, delete_after=60)
 
         try:
             sellPrice, buyPrice = await getBondPriceOSRS()
@@ -357,7 +355,7 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
-        await ctx.send("fetching", ephemeral=True, delete_after=10)
+        await ctx.send("fetching", ephemeral=True, delete_after=60)
 
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the Token Price command"
@@ -408,8 +406,7 @@ class ChatCommands(commands.Cog):
         if not image and not imageurl:
             await ctx.send(
                 "Need an image.",
-                ephemeral=True,
-                delete_after=10,
+                ephemeral=True, delete_after=60,
             )
             return
 
@@ -421,8 +418,7 @@ class ChatCommands(commands.Cog):
         if not img.startswith("http"):
             await ctx.send(
                 "Not a valid URL.",
-                ephemeral=True,
-                delete_after=10,
+                ephemeral=True, delete_after=60,
             )
             return
 
@@ -435,9 +431,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the Ghiblify command")
 
         if len(self.ghibliQueue) > 1:
-            await ctx.send(f"in queue {len(self.ghibliQueue) - 1}", ephemeral=True)
+            await ctx.send(f"in queue {len(self.ghibliQueue) - 1}", ephemeral=True, delete_after=60)
         else:
-            await ctx.send("Working", ephemeral=True)
+            await ctx.send("Working", ephemeral=True, delete_after=60)
 
         while self.ghibliQueue[0] != queueSha:
             await sleep(1)
@@ -473,9 +469,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the Flux command")
 
         if len(self.fluxQueue) > 1:
-            await ctx.send(f"in queue {len(self.fluxQueue) - 1}", ephemeral=True)
+            await ctx.send(f"in queue {len(self.fluxQueue) - 1}", ephemeral=True, delete_after=60)
         else:
-            await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True, delete_after=60)
 
         while self.fluxQueue[0] != queueSha:
             await sleep(1)
@@ -533,9 +529,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the Dream command")
 
         if len(self.dreamQueue) > 1:
-            await ctx.send(f"in queue {len(self.dreamQueue) - 1}", ephemeral=True)
+            await ctx.send(f"in queue {len(self.dreamQueue) - 1}", ephemeral=True, delete_after=60)
         else:
-            await ctx.send("Generating", ephemeral=True)
+            await ctx.send("Generating", ephemeral=True, delete_after=60)
 
         while self.dreamQueue[0] != queueSha:
             await sleep(1)
@@ -585,9 +581,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the TwitVid command")
 
         if len(self.twitVidQueue) > 1:
-            await ctx.send(f"in queue {len(self.twitVidQueue) - 1}", ephemeral=True)
+            await ctx.send(f"in queue {len(self.twitVidQueue) - 1}", ephemeral=True, delete_after=60)
         else:
-            await ctx.send("Fetching", ephemeral=True)
+            await ctx.send("Fetching", ephemeral=True, delete_after=60)
 
         while self.twitVidQueue[0] != queueSha:
             await sleep(1)
