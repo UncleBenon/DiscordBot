@@ -39,7 +39,7 @@ class ChatCommands(commands.Cog):
         if c.channel == self.BOT_CHANNEL:
             return True
         else:
-            await c.reply(
+            await c.send(
                 "Use bot commands in the bot channel!", ephemeral=True, delete_after=10
             )
             try:
@@ -71,11 +71,11 @@ class ChatCommands(commands.Cog):
 
         storedMsg: discord.Message = None
         if len(self.stableQueue) > 1:
-            storedMsg = await ctx.reply(
+            storedMsg = await ctx.send(
                 f"in queue {len(self.stableQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
+            storedMsg = await ctx.send("Generating", ephemeral=True)
 
         while self.stableQueue[0] != queueSha:
             await sleep(1)
@@ -84,7 +84,7 @@ class ChatCommands(commands.Cog):
             out = await stableDiff(prompt, negative)
         except Exception as e:
             self.stableQueue.pop(0)
-            await ctx.reply(f"stable diff: {e}")
+            await ctx.send(f"stable diff: {e}")
             await storedMsg.delete()
             return
 
@@ -94,7 +94,7 @@ class ChatCommands(commands.Cog):
             for file in out:
                 with open(file, "rb") as f:
                     files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.reply(
+            await ctx.send(
                 f"# Stable Diff: {prompt}\n{ctx.author.mention}", files=files
             )
             for f in out:
@@ -125,11 +125,11 @@ class ChatCommands(commands.Cog):
 
         storedMsg: discord.Message = None
         if len(self.stableXLQueue) > 1:
-            storedMsg = await ctx.reply(
+            storedMsg = await ctx.send(
                 f"in queue {len(self.stableXLQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
+            storedMsg = await ctx.send("Generating", ephemeral=True)
 
         while self.stableXLQueue[0] != queueSha:
             await sleep(1)
@@ -138,7 +138,7 @@ class ChatCommands(commands.Cog):
             out = await Stable_XL(prompt, negative)
         except Exception as e:
             self.stableXLQueue.pop(0)
-            await ctx.reply(f"stable XL: {e}")
+            await ctx.send(f"stable XL: {e}")
             await storedMsg.delete()
             return
 
@@ -148,7 +148,7 @@ class ChatCommands(commands.Cog):
             for file in out:
                 with open(file, "rb") as f:
                     files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.reply(f"# Stable XL: {prompt}\n{ctx.author.mention}", files=files)
+            await ctx.send(f"# Stable XL: {prompt}\n{ctx.author.mention}", files=files)
             for f in out:
                 remove(f)
 
@@ -175,11 +175,11 @@ class ChatCommands(commands.Cog):
 
         storedMsg: discord.Message = None
         if len(self.dalleQueue) > 1:
-            storedMsg = await ctx.reply(
+            storedMsg = await ctx.send(
                 f"in queue {len(self.dalleQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
+            storedMsg = await ctx.send("Generating", ephemeral=True)
 
         while self.dalleQueue[0] != queueSha:
             await sleep(1)
@@ -188,7 +188,7 @@ class ChatCommands(commands.Cog):
             out = await dalle(prompt)
         except Exception as e:
             self.dalleQueue.pop(0)
-            await ctx.reply(f"dalle: {e}")
+            await ctx.send(f"dalle: {e}")
             await storedMsg.delete()
             return
 
@@ -198,7 +198,7 @@ class ChatCommands(commands.Cog):
             for file in out:
                 with open(file, "rb") as f:
                     files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.reply(f"# Dalle: {prompt}\n{ctx.author.mention}", files=files)
+            await ctx.send(f"# Dalle: {prompt}\n{ctx.author.mention}", files=files)
             for f in out:
                 remove(f)
 
@@ -224,11 +224,11 @@ class ChatCommands(commands.Cog):
 
         storedMsg: discord.Message = None
         if len(self.vsQueue) > 1:
-            storedMsg = await ctx.reply(
+            storedMsg = await ctx.send(
                 f"in queue {len(self.vsQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
+            storedMsg = await ctx.send("Generating", ephemeral=True)
 
         while self.vsQueue[0] != queueSha:
             await sleep(1)
@@ -237,7 +237,7 @@ class ChatCommands(commands.Cog):
             out = await voiceSynthFunction(prompt)
         except Exception as e:
             self.vsQueue.pop(0)
-            await ctx.reply(f"Voice Synth: {e}")
+            await ctx.send(f"Voice Synth: {e}")
             await storedMsg.delete()
             return
 
@@ -249,7 +249,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(
+                    await ctx.send(
                         f"# Voice Synth: {prompt}\n{ctx.author.mention}", file=file
                     )
                 remove(out)
@@ -257,7 +257,7 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.vsQueue.pop(0)
             remove(out)
-            await ctx.reply(f"voice synth: {e}")
+            await ctx.send(f"voice synth: {e}")
             return
 
     @commands.hybrid_command(
@@ -277,7 +277,7 @@ class ChatCommands(commands.Cog):
             return
 
         if not image and not imageurl:
-            await ctx.reply(
+            await ctx.send(
                 "Need an image.",
                 ephemeral=True,
                 delete_after=10,
@@ -290,7 +290,7 @@ class ChatCommands(commands.Cog):
             img = imageurl
 
         if not img.startswith("http"):
-            await ctx.reply(
+            await ctx.send(
                 "Not a valid URL.",
                 ephemeral=True,
                 delete_after=10,
@@ -307,11 +307,11 @@ class ChatCommands(commands.Cog):
 
         storedMsg: discord.Message = None
         if len(self.rbgQueue) > 1:
-            storedMsg = await ctx.reply(
+            storedMsg = await ctx.send(
                 f"in queue {len(self.rbgQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Working", ephemeral=True)
+            storedMsg = await ctx.send("Working", ephemeral=True)
 
         while self.rbgQueue[0] != queueSha:
             await sleep(1)
@@ -320,7 +320,7 @@ class ChatCommands(commands.Cog):
             out = await RemoveBackGroundFunction(img)
         except Exception as e:
             self.rbgQueue.pop(0)
-            await ctx.reply(f"rbg: {e}")
+            await ctx.send(f"rbg: {e}")
             await storedMsg.delete()
             return
 
@@ -328,7 +328,7 @@ class ChatCommands(commands.Cog):
             self.rbgQueue.pop(0)
             with open(out, "rb") as f:
                 file = discord.File(f, filename=f"{getSha256(f)}.png")
-            await ctx.reply(f"# Remove Background: \n{ctx.author.mention}", file=file)
+            await ctx.send(f"# Remove Background: \n{ctx.author.mention}", file=file)
             remove(out)
 
         await storedMsg.delete()
@@ -349,12 +349,12 @@ class ChatCommands(commands.Cog):
         )
         print(f"{curTime()}  -  {ctx.author} used the Bond Price (OSRS) command")
 
-        await ctx.reply("fetching", ephemeral=True, delete_after=10)
+        await ctx.send("fetching", ephemeral=True, delete_after=10)
 
         try:
             sellPrice, buyPrice = await getBondPriceOSRS()
         except Exception as e:
-            await ctx.reply(f"bond price: {e}")
+            await ctx.send(f"bond price: {e}")
             return
 
         async with ctx.typing():
@@ -373,7 +373,7 @@ class ChatCommands(commands.Cog):
             embed.add_field(
                 name="Buy Price: ", value=f":coin: {buyPrice}", inline=False
             )
-            await ctx.reply(embed=embed)
+            await ctx.send(embed=embed)
 
     @commands.hybrid_command(
         name="tp",
@@ -386,7 +386,7 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
-        await ctx.reply("fetching", ephemeral=True, delete_after=10)
+        await ctx.send("fetching", ephemeral=True, delete_after=10)
 
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the Token Price command"
@@ -396,7 +396,7 @@ class ChatCommands(commands.Cog):
         try:
             tprice = await getWoWTokenPrice()
         except Exception as e:
-            await ctx.reply(f"token price: {e}")
+            await ctx.send(f"token price: {e}")
             return
 
         async with ctx.typing():
@@ -416,7 +416,7 @@ class ChatCommands(commands.Cog):
             embed.add_field(name="Europe:", value="", inline=False)
             embed.add_field(name="Retail:", value=f":coin: {tprice[1]}", inline=True)
             embed.add_field(name="Classic:", value=f":coin: {tprice[3]}", inline=True)
-            await ctx.reply(embed=embed)
+            await ctx.send(embed=embed)
 
     @commands.hybrid_command(
         name="ghibli",
@@ -435,7 +435,7 @@ class ChatCommands(commands.Cog):
             return
 
         if not image and not imageurl:
-            await ctx.reply(
+            await ctx.send(
                 "Need an image.",
                 ephemeral=True,
                 delete_after=10,
@@ -448,7 +448,7 @@ class ChatCommands(commands.Cog):
             img = imageurl
 
         if not img.startswith("http"):
-            await ctx.reply(
+            await ctx.send(
                 "Not a valid URL.",
                 ephemeral=True,
                 delete_after=10,
@@ -465,11 +465,11 @@ class ChatCommands(commands.Cog):
 
         storedMsg: discord.Message = None
         if len(self.ghibliQueue) > 1:
-            storedMsg = await ctx.reply(
+            storedMsg = await ctx.send(
                 f"in queue {len(self.ghibliQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Working", ephemeral=True)
+            storedMsg = await ctx.send("Working", ephemeral=True)
 
         while self.ghibliQueue[0] != queueSha:
             await sleep(1)
@@ -478,7 +478,7 @@ class ChatCommands(commands.Cog):
             out = await ghiblifyFunction(img)
         except Exception as e:
             self.ghibliQueue.pop(0)
-            await ctx.reply(f"Ghiblify: {e}")
+            await ctx.send(f"Ghiblify: {e}")
             await storedMsg.delete()
             return
 
@@ -486,7 +486,7 @@ class ChatCommands(commands.Cog):
             self.ghibliQueue.pop(0)
             with open(out, "rb") as f:
                 file = discord.File(f, filename=f"{getSha256(f)}.webp")
-            await ctx.reply(f"# Ghiblify: \n{img}\n{ctx.author.mention}", file=file)
+            await ctx.send(f"# Ghiblify: \n{img}\n{ctx.author.mention}", file=file)
             remove(out)
 
         await storedMsg.delete()
@@ -509,11 +509,11 @@ class ChatCommands(commands.Cog):
 
         storedMsg: discord.Message = None
         if len(self.fluxQueue) > 1:
-            storedMsg = await ctx.reply(
+            storedMsg = await ctx.send(
                 f"in queue {len(self.fluxQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
+            storedMsg = await ctx.send("Generating", ephemeral=True)
 
         while self.fluxQueue[0] != queueSha:
             await sleep(1)
@@ -522,7 +522,7 @@ class ChatCommands(commands.Cog):
             out = await fluxMasterFunction(prompt)
         except Exception as e:
             self.fluxQueue.pop(0)
-            await ctx.reply(f"Flux: {e}")
+            await ctx.send(f"Flux: {e}")
             await storedMsg.delete()
             return
 
@@ -534,7 +534,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(
+                    await ctx.send(
                         f"# Flux: {prompt}\n{ctx.author.mention}", file=file
                     )
                 remove(out)
@@ -542,7 +542,7 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.fluxQueue.pop(0)
             remove(out)
-            await ctx.reply(f"Flux: {e}")
+            await ctx.send(f"Flux: {e}")
             return
 
     @commands.hybrid_command(
@@ -576,11 +576,11 @@ class ChatCommands(commands.Cog):
 
         storedMsg: discord.Message = None
         if len(self.dreamQueue) > 1:
-            storedMsg = await ctx.reply(
+            storedMsg = await ctx.send(
                 f"in queue {len(self.dreamQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Generating", ephemeral=True)
+            storedMsg = await ctx.send("Generating", ephemeral=True)
 
         while self.dreamQueue[0] != queueSha:
             await sleep(1)
@@ -589,7 +589,7 @@ class ChatCommands(commands.Cog):
             out = await dreamMasterFunc(prompt, int(size))
         except Exception as e:
             self.dreamQueue.pop(0)
-            await ctx.reply(f"Dream: {e}")
+            await ctx.send(f"Dream: {e}")
             await storedMsg.delete()
             return
 
@@ -601,7 +601,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(
+                    await ctx.send(
                         f"# Dream: {prompt}\n{ctx.author.mention}", file=file
                     )
                 remove(out)
@@ -609,7 +609,7 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.dreamQueue.pop(0)
             remove(out)
-            await ctx.reply(f"Dream: {e}")
+            await ctx.send(f"Dream: {e}")
             return
 
     @commands.hybrid_command(
@@ -633,11 +633,11 @@ class ChatCommands(commands.Cog):
 
         storedMsg: discord.Message = None
         if len(self.twitVidQueue) > 1:
-            storedMsg = await ctx.reply(
+            storedMsg = await ctx.send(
                 f"in queue {len(self.twitVidQueue) - 1}", ephemeral=True
             )
         else:
-            storedMsg = await ctx.reply("Fetching", ephemeral=True)
+            storedMsg = await ctx.send("Fetching", ephemeral=True)
 
         while self.twitVidQueue[0] != queueSha:
             await sleep(1)
@@ -646,7 +646,7 @@ class ChatCommands(commands.Cog):
             out = await downloadTwitterVideoFunction(url)
         except Exception as e:
             self.twitVidQueue.pop(0)
-            await ctx.reply(f"TwitVid: {e}")
+            await ctx.send(f"TwitVid: {e}")
             await storedMsg.delete()
             return
 
@@ -656,7 +656,7 @@ class ChatCommands(commands.Cog):
                 with open(out, "rb") as f:
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
-                    await ctx.reply(
+                    await ctx.send(
                         f"# TwitVid: <{url}>\n{ctx.author.mention}", file=file
                     )
                 remove(out)
@@ -664,5 +664,5 @@ class ChatCommands(commands.Cog):
         except Exception as e:
             self.twitVidQueue.pop(0)
             remove(out)
-            await ctx.reply(f"TwitVid: {e}")
+            await ctx.send(f"TwitVid: {e}")
             return
