@@ -42,7 +42,7 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
         while not await found.is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 600:
+            if _cc >= 300:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
                 if _errorforce >= 10:
@@ -51,7 +51,7 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
                 _errorforce += 1
                 _cc = 0
             if await page.get_by_text("no audio").is_visible():
-                raise Exception("no audio generated, dunno why lmao")
+                raise Exception("no audio generated")
             if await page.get_by_text("CUDA error: device-side assert triggered CUDA kernel errors").is_visible():
                 raise Exception("CUDA kernel errors")
             if await page.get_by_text("CUDA out of memory.").is_visible():
