@@ -1,7 +1,6 @@
 from os import path, remove
 from core.misc import curTime
 from core.sha import getSha256
-from core.stableDiff import stableDiff
 from core.SDXL_Google import Stable_XL
 from core.dalle import dalle
 from core.voice import voiceSynthFunction
@@ -23,7 +22,6 @@ class ChatCommands(commands.Cog):
         self.bot = bot
         self.BOT_CHANNEL = botChannel
         self.DEBUG_CHANNEL = debugChannel
-        self.stableQueue = []
         self.stableXLQueue = []
         self.dalleQueue = []
         self.vsQueue = []
@@ -47,56 +45,6 @@ class ChatCommands(commands.Cog):
             except Exception as e:
                 print(e)
             return False
-
-    @commands.hybrid_command(
-        name="sd",
-        description="Stable Diffusion - Old jank Stable Diffusion, guaranteed a laugh.",
-    )
-    async def StableDiff(
-        self, ctx: commands.Context, prompt: str, negative: str = None
-    ) -> None:
-        if not ctx:
-            return
-
-        if not await self.checkChannel(ctx):
-            return
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the stable diff command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the stable diff command")
-
-        if len(self.stableQueue) > 0:
-            stored = await ctx.send(f"in queue {len(self.stableQueue)}", ephemeral=True)
-        else:
-            stored = await ctx.send("Generating", ephemeral=True)
-
-        queueSha = getSha256(prompt)
-        self.stableQueue.append(queueSha)
-
-        while self.stableQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await stableDiff(prompt, negative)
-        except Exception as e:
-            self.stableQueue.pop(0)
-            await ctx.send(f"stable diff: {e}")
-            await stored.delete()
-            return
-
-        async with ctx.typing():
-            self.stableQueue.pop(0)
-            files: list[discord.File] = []
-            for file in out:
-                with open(file, "rb") as f:
-                    files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.send(
-                f"# Stable Diff: {prompt}\n{ctx.author.mention}", files=files
-            )
-            await stored.delete()
-            for f in out:
-                remove(f)
 
     @commands.hybrid_command(
         name="sdx",

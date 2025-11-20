@@ -10,6 +10,10 @@ async def Stable_XL(prompt : str, negPrompt : str = None, debug : bool = False) 
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
         await page.goto("https://google-sdxl.hf.space/")
+
+        if await page.get_by_text("Your space is in error").is_visible():
+            raise Exception("Space is having errors, not the bot's fault")
+
         await page.get_by_placeholder("Enter your prompt").fill(prompt)
         if negPrompt:
             await page.get_by_role("button", name="Advanced settings ▼").click()
