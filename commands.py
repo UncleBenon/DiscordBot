@@ -11,6 +11,7 @@ from core.ghiblify import ghiblifyFunction
 from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
 from core.twitterDownload import downloadTwitterVideoFunction
+from core.stable import stable_xl_function
 from asyncio import sleep
 from discord.ext import commands
 from discord import app_commands
@@ -32,6 +33,7 @@ class ChatCommands(commands.Cog):
         self.fluxQueue = []
         self.dreamQueue = []
         self.twitVidQueue = []
+        self.stableDiffQueue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
         if c.channel == self.BOT_CHANNEL:
@@ -65,7 +67,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the stable XL command")
 
         if len(self.stableXLQueue) > 0:
-            stored = await ctx.send(f"in queue {len(self.stableXLQueue)}", ephemeral=True)
+            stored = await ctx.send(
+                f"in queue {len(self.stableXLQueue)}", ephemeral=True
+            )
         else:
             stored = await ctx.send("Generating", ephemeral=True)
 
@@ -213,7 +217,8 @@ class ChatCommands(commands.Cog):
         if not image and not imageurl:
             await ctx.send(
                 "Need an image.",
-                ephemeral=True, delete_after=60,
+                ephemeral=True,
+                delete_after=60,
             )
             return
 
@@ -225,7 +230,8 @@ class ChatCommands(commands.Cog):
         if not img.startswith("http"):
             await ctx.send(
                 "Not a valid URL.",
-                ephemeral=True, delete_after=60,
+                ephemeral=True,
+                delete_after=60,
             )
             return
 
@@ -369,7 +375,8 @@ class ChatCommands(commands.Cog):
         if not image and not imageurl:
             await ctx.send(
                 "Need an image.",
-                ephemeral=True, delete_after=60,
+                ephemeral=True,
+                delete_after=60,
             )
             return
 
@@ -381,7 +388,8 @@ class ChatCommands(commands.Cog):
         if not img.startswith("http"):
             await ctx.send(
                 "Not a valid URL.",
-                ephemeral=True, delete_after=60,
+                ephemeral=True,
+                delete_after=60,
             )
             return
 
@@ -549,7 +557,9 @@ class ChatCommands(commands.Cog):
         print(f"{curTime()}  -  {ctx.author} used the TwitVid command")
 
         if len(self.twitVidQueue) > 0:
-            stored = await ctx.send(f"in queue {len(self.twitVidQueue)}", ephemeral=True)
+            stored = await ctx.send(
+                f"in queue {len(self.twitVidQueue)}", ephemeral=True
+            )
         else:
             stored = await ctx.send("Fetching", ephemeral=True)
 
@@ -582,5 +592,82 @@ class ChatCommands(commands.Cog):
             self.twitVidQueue.pop(0)
             remove(out)
             await ctx.send(f"TwitVid: {e}")
+            await stored.delete()
+            return
+
+    @commands.hybrid_command(
+        name="stable",
+        description="new stable, which supports image2image",
+    )
+    async def stableDiff(
+        self,
+        ctx: commands.Context,
+        prompt: str,
+        image: discord.Attachment = None,
+        imageurl: str = None,
+    ):
+        if not ctx:
+            return
+
+        if not await self.checkChannel(ctx):
+            return
+
+        img = None
+        if image:
+            img = image.url
+        elif imageurl:
+            img = imageurl
+
+        if not img.startswith("http"):
+            await ctx.send(
+                "Not a valid URL.",
+                ephemeral=True,
+                delete_after=60,
+            )
+            return
+
+        await self.DEBUG_CHANNEL.send(
+            f"{curTime()}  -  {ctx.author} used the Stable Diffusion command"
+        )
+        print(f"{curTime()}  -  {ctx.author} used the Stable Diffusion command")
+
+        if len(self.stableDiffQueue) > 0:
+            stored = await ctx.send(
+                f"in queue {len(self.stableDiffQueue)}", ephemeral=True
+            )
+        else:
+            stored = await ctx.send("Generating", ephemeral=True)
+
+        queueSha = getSha256(prompt)
+        self.stableDiffQueue.append(queueSha)
+
+        while self.stableDiffQueue[0] != queueSha:
+            await sleep(1)
+
+        try:
+            out = await stable_xl_function(prompt, img)
+        except Exception as e:
+            self.stableDiffQueue.pop(0)
+            await ctx.send(f"Stable Diffusion: {e}")
+            await stored.delete()
+            return
+
+        if len(prompt) > 1500:
+            prompt = ""
+        try:
+            async with ctx.typing():
+                with open(out, "rb") as f:
+                    _name = path.basename(out)
+                    file = discord.File(f, filename=_name)
+                    await ctx.send(
+                        f"# Stable Diffusion: {prompt}\n{ctx.author.mention}", file=file
+                    )
+                await stored.delete()
+                remove(out)
+                self.stableDiffQueue.pop(0)
+        except Exception as e:
+            self.stableDiffQueue.pop(0)
+            remove(out)
+            await ctx.send(f"Stable Diffusion: {e}")
             await stored.delete()
             return
