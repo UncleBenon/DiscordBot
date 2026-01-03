@@ -627,7 +627,7 @@ class ChatCommands(commands.Cog):
             return
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Stable Diffusion command"
+            f"{curTime()}  -  {ctx.author} used the Stable Diffusion command\n\n{prompt[:1500]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the Stable Diffusion command")
 
