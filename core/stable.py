@@ -10,9 +10,8 @@ import os
 PATH = "temp"
 URL = "https://diffusers-unofficial-sdxl-turbo-i2i-t2i.hf.space/"
 
-async def stable_xl_function(prompt: str, image: str = None, DEBUG: bool = False):
+async def stable_xl_function(prompt: str, image: str = None, DEBUG: bool = False) -> list[str]:
     _del_reminder = False
-    _seed = str(randint(0, 12013012031030))
     _prompt = "#component-5 > label > textarea"
     _upload_button = "#component-9 > div.image-container.svelte-rrgd5g > div > button"
     _options = "#component-12 > button"
@@ -46,30 +45,34 @@ async def stable_xl_function(prompt: str, image: str = None, DEBUG: bool = False
 
         await sleep(1)
 
-        await page.fill(_seed_inp, _seed) # set seed
         await page.fill(_prompt, prompt) # set prompt
-        await page.click(_generate_button) # generate image
 
-        await sleep(10)
+        out = []
+        for _ in range(4):
+            await page.fill(_seed_inp, gen_seed()) # set seed
+            await page.click(_generate_button) # generate image
+            await sleep(10)
 
-        link = await page.locator(_generated_image).get_attribute("src")
+            link = await page.locator(_generated_image).get_attribute("src")
 
-        with ThreadPoolExecutor(1) as exe:
-            _loop = get_running_loop()
-            file = await _loop.run_in_executor(exe, get, link)
+            with ThreadPoolExecutor(1) as exe:
+                _loop = get_running_loop()
+                file = await _loop.run_in_executor(exe, get, link)
+            if file.status_code != 200:
+                continue
+            file = file.content
+            filename = f"{sha256(file).hexdigest()}.webp"
+            if not os.path.exists(PATH):
+                os.mkdir(PATH)
+            fullPath = os.path.join(PATH, filename)
+            with open(fullPath, 'wb') as f:
+                f.write(file)
+            out.append(fullPath)
 
     if _del_reminder:
         os.remove(inp)
-    if file.status_code != 200:
-        raise Exception(f"Something went wrong, Download link returning {file.status_code}")
 
-    file = file.content
-    filename = f"{sha256(file).hexdigest()}.webp"
-    if not os.path.exists(PATH):
-        os.mkdir(PATH)
-    fullPath = os.path.join(PATH, filename)
-    with open(fullPath, 'wb') as f:
-        f.write(file)
+    return out
 
-    return fullPath
-
+def gen_seed() -> str:
+    return str(randint(0, 12013012031030))

@@ -596,7 +596,7 @@ class ChatCommands(commands.Cog):
             return
 
     @commands.hybrid_command(
-        name="stable",
+        name="sd",
         description="new stable, which supports image2image",
     )
     async def stableDiff(
@@ -656,18 +656,21 @@ class ChatCommands(commands.Cog):
             prompt = ""
         try:
             async with ctx.typing():
-                with open(out, "rb") as f:
-                    _name = path.basename(out)
-                    file = discord.File(f, filename=_name)
-                    await ctx.send(
-                        f"# Stable Diffusion: {prompt}\n{ctx.author.mention}", file=file
-                    )
+                files: list[discord.File] = []
+                for file in out:
+                    with open(file, "rb") as f:
+                        files.append(discord.File(f, filename=f"{path.basename(file)}.png"))
+                await ctx.send(
+                    f"# Stable Diffusion: {prompt}\n{ctx.author.mention}", files=files
+                )
                 await stored.delete()
-                remove(out)
+                for f in out:
+                    remove(f)
                 self.stableDiffQueue.pop(0)
         except Exception as e:
             self.stableDiffQueue.pop(0)
-            remove(out)
+            for f in out:
+                remove(f)
             await ctx.send(f"Stable Diffusion: {e}")
             await stored.delete()
             return
