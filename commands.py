@@ -618,7 +618,7 @@ class ChatCommands(commands.Cog):
         elif imageurl:
             img = imageurl
 
-        if not img.startswith("http"):
+        if img and not img.startswith("http"):
             await ctx.send(
                 "Not a valid URL.",
                 ephemeral=True,
