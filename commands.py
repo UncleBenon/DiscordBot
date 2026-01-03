@@ -659,7 +659,7 @@ class ChatCommands(commands.Cog):
                 files: list[discord.File] = []
                 for file in out:
                     with open(file, "rb") as f:
-                        files.append(discord.File(f, filename=f"{path.basename(file)}.png"))
+                        files.append(discord.File(f, filename=f"{path.basename(file)}"))
                 await ctx.send(
                     f"# Stable Diffusion: {prompt}\n{ctx.author.mention}", files=files
                 )

@@ -51,7 +51,7 @@ async def stable_xl_function(prompt: str, image: str = None, DEBUG: bool = False
         for _ in range(4):
             await page.fill(_seed_inp, gen_seed()) # set seed
             await page.click(_generate_button) # generate image
-            await sleep(10)
+            await sleep(5)
 
             link = await page.locator(_generated_image).get_attribute("src")
 
