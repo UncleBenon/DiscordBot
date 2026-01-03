@@ -57,7 +57,11 @@ async def stable_xl_function(prompt: str, image: str = None, DEBUG: bool = False
 
             with ThreadPoolExecutor(1) as exe:
                 _loop = get_running_loop()
-                file = await _loop.run_in_executor(exe, get, link)
+                try:
+                    file = await _loop.run_in_executor(exe, get, link)
+                except Exception as e:
+                    print(e)
+                    continue
             if file.status_code != 200:
                 continue
             file = file.content
