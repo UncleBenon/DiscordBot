@@ -12,7 +12,7 @@ async def on_ready() -> None:
     name = str(BOT.user).split("#")[0]
     BOT_CHANNEL = BOT.get_channel(1048600881593061416)
     DEBUG_CHANNEL = BOT.get_channel(1048564475659288666)
-    synced = 0
+    synced = []
     try:
         await BOT.add_cog(ChatCommands(BOT, BOT_CHANNEL, DEBUG_CHANNEL))
         synced = await BOT.tree.sync()
