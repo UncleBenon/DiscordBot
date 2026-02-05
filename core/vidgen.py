@@ -29,11 +29,11 @@ async def vidGenMasterFunc(prompt: str, neg: str = None, gen: int = 0, DEBUG=Fal
         if neg:
             await page.locator(_neg).press_sequentially(", " + neg)
 
-        if gen > 0:
+        if int(gen) > 0:
             _loc = "#component-8 > label > div > div.wrap-inner.svelte-tq78c3 > div > input"
             await page.locator(_loc).click()
             await sleep(1)
-            for _ in range(gen + 1):
+            for _ in range(int(gen) + 1):
                 await page.locator(_loc).press("ArrowDown")
                 await sleep(1)
             await page.locator(_loc).press("Enter")
