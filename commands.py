@@ -12,6 +12,7 @@ from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
 from core.twitterDownload import downloadTwitterVideoFunction
 from core.stable import stable_xl_function
+from core.vidgen import vidGenMasterFunc
 from asyncio import sleep
 from discord.ext import commands
 from discord import app_commands
@@ -34,6 +35,7 @@ class ChatCommands(commands.Cog):
         self.dreamQueue = []
         self.twitVidQueue = []
         self.stableDiffQueue = []
+        self.vidGenQueue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
         if c.channel == self.BOT_CHANNEL:
@@ -674,3 +676,67 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"Stable Diffusion: {e}")
             await stored.delete()
             return
+
+    @commands.hybrid_command(
+        name="vidgen", description="one of the last vidgens on hugging without zeroGPU"
+    )
+    @app_commands.choices(
+        size=[
+            app_commands.Choice(name="Cartoon", value="0"),
+            app_commands.Choice(name="Realism", value="1"),
+            app_commands.Choice(name="Toon", value="2"),
+        ]
+    )
+    async def vidgenCommand(
+        self, ctx: commands.Context, prompt: str, negPrompt: str = "", model: str = "1"
+    ) -> None:
+        if not ctx:
+            return
+
+        if not await self.checkChannel(ctx):
+            return
+
+        await self.DEBUG_CHANNEL.send(
+            f"{curTime()}  -  {ctx.author} used the VidGen command\nSize: {model}\n\n{prompt[:1500]}"
+        )
+        print(f"{curTime()}  -  {ctx.author} used the VidGen command")
+
+        if len(self.vidGenQueue) > 0:
+            stored = await ctx.send(f"in queue {len(self.vidGenQueue)}", ephemeral=True)
+        else:
+            stored = await ctx.send("Generating", ephemeral=True)
+
+        queueSha = getSha256(prompt)
+        self.vidGenQueue.append(queueSha)
+
+        while self.vidGenQueue[0] != queueSha:
+            await sleep(1)
+
+        try:
+            out = await vidGenMasterFunc(prompt, negPrompt, model)
+        except Exception as e:
+            self.vidGenQueue.pop(0)
+            await ctx.send(f"VidGen: {e}")
+            await stored.delete()
+            return
+
+        if len(prompt) > 1500:
+            prompt = ""
+        try:
+            async with ctx.typing():
+                with open(out, "rb") as f:
+                    _name = path.basename(out)
+                    file = discord.File(f, filename=_name)
+                    await ctx.send(
+                        f"# VidGen: {prompt}\n{ctx.author.mention}", file=file
+                    )
+                await stored.delete()
+                remove(out)
+                self.vidGenQueue.pop(0)
+        except Exception as e:
+            self.vidGenQueue.pop(0)
+            remove(out)
+            await ctx.send(f"VidGen: {e}")
+            await stored.delete()
+            return
+
