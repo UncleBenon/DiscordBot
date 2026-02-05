@@ -678,17 +678,17 @@ class ChatCommands(commands.Cog):
             return
 
     @commands.hybrid_command(
-        name="vidgen", description="one of the last vidgens on hugging without zeroGPU"
+        name="vidgen", description="dunno how good this one is"
     )
     @app_commands.choices(
-        size=[
+        model=[
             app_commands.Choice(name="Cartoon", value="0"),
             app_commands.Choice(name="Realism", value="1"),
             app_commands.Choice(name="Toon", value="2"),
         ]
     )
     async def vidgenCommand(
-        self, ctx: commands.Context, prompt: str, negPrompt: str = "", model: str = "1"
+        self, ctx: commands.Context, prompt: str, neg: str = None, model: str = "1"
     ) -> None:
         if not ctx:
             return
@@ -712,8 +712,10 @@ class ChatCommands(commands.Cog):
         while self.vidGenQueue[0] != queueSha:
             await sleep(1)
 
+        if not neg:
+            neg = ""
         try:
-            out = await vidGenMasterFunc(prompt, negPrompt, model)
+            out = await vidGenMasterFunc(prompt, neg, model)
         except Exception as e:
             self.vidGenQueue.pop(0)
             await ctx.send(f"VidGen: {e}")
