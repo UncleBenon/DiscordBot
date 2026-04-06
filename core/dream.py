@@ -53,7 +53,7 @@ async def dreamMasterFunc(prompt : str, res : int, DEBUG = False):
         while not await page.locator(_image).is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 600:
+            if _cc >= 900:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible():
                 if _error >= 30:
