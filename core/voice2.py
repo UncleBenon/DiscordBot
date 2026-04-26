@@ -45,6 +45,7 @@ async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 2.0, de
             await page.locator("#voice-select > div.svelte-1xfsv4t.container > div > div.wrap-inner.svelte-1xfsv4t > div > input").fill(VOICES[voice])
             await sleep(1)
             await page.locator("#voice-select > div.svelte-1xfsv4t.container > div > div.wrap-inner.svelte-1xfsv4t > div > input").press("Enter")
+            await sleep(1)
 
         await page.locator("#text-input > label > div > textarea").fill(prompt)
         await sleep(1)
