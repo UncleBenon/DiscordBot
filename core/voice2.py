@@ -2,9 +2,9 @@ from playwright.async_api import async_playwright
 from asyncio import sleep, get_running_loop
 from core.misc import convertAsync
 from concurrent.futures import ThreadPoolExecutor
+from core.sha import getSha256
 import requests
 import os
-from hashlib import sha256
 
 PATH = 'temp'
 VOICES = [
@@ -82,7 +82,7 @@ async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 2.0, de
             _loop = get_running_loop()
             content = await _loop.run_in_executor(exe, requests.get, link)
 
-    filename = f"{sha256(content).hexdigest()}.wav"
+    filename = f"{getSha256(content)}.wav"
     fullPath = os.path.join(PATH, filename)
     if not os.path.exists(PATH):
         os.mkdir(PATH)
