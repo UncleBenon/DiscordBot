@@ -21,8 +21,8 @@ async def voiceSynthFunction(prompt : str, debug = False) -> str:
             raise Exception("Page is giving a 502, it's dead jim.")
 
         while await page.get_by_text("Preparing Space").is_visible():
-            await sleep(10)
             await page.goto("https://fishaudio-fish-speech-1.hf.space")
+            await sleep(10)
 
         await sleep(3)
 

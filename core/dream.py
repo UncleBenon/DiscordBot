@@ -21,8 +21,8 @@ async def dreamMasterFunc(prompt : str, res : int, DEBUG = False):
         await page.goto(URL)
 
         while await page.get_by_text("Preparing Space").is_visible() or await page.get_by_text("Internal Error").is_visible():
-            await sleep(10)
             await page.goto(URL)
+            await sleep(10)
 
         if await page.get_by_text("Your space is in error").is_visible():
             raise Exception("Space is having errors, not the bot's fault")

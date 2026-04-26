@@ -12,7 +12,6 @@ from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
 from core.twitterDownload import downloadTwitterVideoFunction
 from core.stable import stable_xl_function
-from core.vidgen import vidGenMasterFunc
 from asyncio import sleep
 from discord.ext import commands
 from discord import app_commands
