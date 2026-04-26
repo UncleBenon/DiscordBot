@@ -12,6 +12,7 @@ from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
 from core.twitterDownload import downloadTwitterVideoFunction
 from core.stable import stable_xl_function
+from core.voice2 import voiceSynth2Function
 from asyncio import sleep
 from discord.ext import commands
 from discord import app_commands
@@ -34,7 +35,7 @@ class ChatCommands(commands.Cog):
         self.dreamQueue = []
         self.twitVidQueue = []
         self.stableDiffQueue = []
-        self.vidGenQueue = []
+        self.vs2Queue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
         if c.channel == self.BOT_CHANNEL:
@@ -674,4 +675,70 @@ class ChatCommands(commands.Cog):
                 remove(f)
             await ctx.send(f"Stable Diffusion: {e}")
             await stored.delete()
+            return
+
+    @commands.hybrid_command(
+        name="vs2", description="Voice Synth 2 - Make an AI say funny things"
+    )
+    @app_commands.choices(
+        voice=[
+            app_commands.Choice(name="alba", value='0'),
+            app_commands.Choice(name="marius", value='1'),
+            app_commands.Choice(name="javert", value='2'),
+            app_commands.Choice(name="jean", value='3'),
+            app_commands.Choice(name="fantine", value='4'),
+            app_commands.Choice(name="cosette", value='5'),
+            app_commands.Choice(name="eponine", value='6'),
+            app_commands.Choice(name="azelma", value='7')
+        ]
+    )
+    async def VoiceSynth2(self, ctx: commands.Context, prompt: str, voice:str = '0') -> None:
+        if not ctx:
+            return
+
+        if not await self.checkChannel(ctx):
+            return
+
+        await self.DEBUG_CHANNEL.send(
+            f"{curTime()}  -  {ctx.author} used the voice synth 2 command\n\n{prompt[:1500]}"
+        )
+        print(f"{curTime()}  -  {ctx.author} used the voice synth 2 command")
+
+        if len(self.vs2Queue) > 0:
+            stored = await ctx.send(f"in queue {len(self.vs2Queue)}", ephemeral=True)
+        else:
+            stored = await ctx.send("Generating", ephemeral=True)
+
+        queueSha = getSha256(prompt)
+        self.vs2Queue.append(queueSha)
+
+        while self.vs2Queue[0] != queueSha:
+            await sleep(1)
+
+        try:
+            out = await voiceSynth2Function(prompt)
+        except Exception as e:
+            self.vs2Queue.pop(0)
+            await ctx.send(f"Voice Synth 2: {e}")
+            await stored.delete()
+            return
+
+        if len(prompt) > 1500:
+            prompt = ""
+        try:
+            async with ctx.typing():
+                with open(out, "rb") as f:
+                    _name = path.basename(out)
+                    file = discord.File(f, filename=_name)
+                    await ctx.send(
+                        f"# Voice Synth 2: {prompt}\n{ctx.author.mention}", file=file
+                    )
+                await stored.delete()
+                remove(out)
+                self.vs2Queue.pop(0)
+        except Exception as e:
+            self.vs2Queue.pop(0)
+            remove(out)
+            await stored.delete()
+            await ctx.send(f"voice synth 2: {e}")
             return

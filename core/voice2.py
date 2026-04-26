@@ -1,10 +1,10 @@
 from playwright.async_api import async_playwright 
 from asyncio import sleep, get_running_loop
-from concurrent.futures import ThreadPoolExecutor
-from core.sha import getSha256
 from core.misc import convertAsync
+from concurrent.futures import ThreadPoolExecutor
 import requests
 import os
+from hashlib import sha256
 
 PATH = 'temp'
 VOICES = [
@@ -18,7 +18,7 @@ VOICES = [
     "azelma"
 ]
 
-async def voiceSynth2Function(prompt : str, voice: int = 0, temp: float = 1.0, debug = False) -> str:
+async def voiceSynth2Function(prompt: str, voice: str = "0", temp: float = 2.0, debug:bool = False) -> str:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
@@ -36,17 +36,17 @@ async def voiceSynth2Function(prompt : str, voice: int = 0, temp: float = 1.0, d
 
         await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.block.svelte-1plpy97.padded.auto-margin > button").click()
         await sleep(1)
-        await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.block.svelte-1plpy97.padded.auto-margin > div:nth-child(3) > div > div:nth-child(1) > div > div:nth-child(1) > div.wrap.svelte-8epfm4 > div.head.svelte-8epfm4 > div > input").press_sequentially(str(temp))
+        await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.block.svelte-1plpy97.padded.auto-margin > div:nth-child(3) > div > div:nth-child(1) > div > div:nth-child(1) > div.wrap.svelte-8epfm4 > div.head.svelte-8epfm4 > div > input").fill(temp)
 
-        if voice > 8: 
-            voice = 1
+        if voice > 7: 
+            voice = 0
 
         if voice > 0:
-            await page.locator("#voice-select > div.svelte-1xfsv4t.container > div > div.wrap-inner.svelte-1xfsv4t > div > input").press_sequentially(VOICES[voice])
+            await page.locator("#voice-select > div.svelte-1xfsv4t.container > div > div.wrap-inner.svelte-1xfsv4t > div > input").fill(VOICES[int(voice)])
             await sleep(1)
             await page.locator("#voice-select > div.svelte-1xfsv4t.container > div > div.wrap-inner.svelte-1xfsv4t > div > input").press("Enter")
 
-        await page.locator("#text-input > label > div > textarea").press_sequentially(prompt)
+        await page.locator("#text-input > label > div > textarea").fill(prompt)
         await sleep(1)
         await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.row.svelte-7xavid.unequal-height > button.lg.primary.svelte-xzq5jh").click()
 
@@ -82,7 +82,7 @@ async def voiceSynth2Function(prompt : str, voice: int = 0, temp: float = 1.0, d
         _loop = get_running_loop()
         content = await _loop.run_in_executor(exe, requests.get, link)
 
-    filename = f"{getSha256(content.content)}.wav"
+    filename = f"{sha256(content.content).hexdigest()}.wav"
     fullPath = os.path.join(PATH, filename)
     if not os.path.exists(PATH):
         os.mkdir(PATH)
@@ -92,4 +92,3 @@ async def voiceSynth2Function(prompt : str, voice: int = 0, temp: float = 1.0, d
     fullPath = await convertAsync(fullPath)
 
     return fullPath
-
