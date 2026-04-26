@@ -18,7 +18,7 @@ VOICES = [
     "azelma"
 ]
 
-async def voiceSynth2Function(prompt: str, voice: str = "0", temp: float = 2.0, debug:bool = False) -> str:
+async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 2.0, debug:bool = False) -> str:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
@@ -42,7 +42,7 @@ async def voiceSynth2Function(prompt: str, voice: str = "0", temp: float = 2.0, 
             voice = 0
 
         if voice > 0:
-            await page.locator("#voice-select > div.svelte-1xfsv4t.container > div > div.wrap-inner.svelte-1xfsv4t > div > input").fill(VOICES[int(voice)])
+            await page.locator("#voice-select > div.svelte-1xfsv4t.container > div > div.wrap-inner.svelte-1xfsv4t > div > input").fill(VOICES[voice])
             await sleep(1)
             await page.locator("#voice-select > div.svelte-1xfsv4t.container > div > div.wrap-inner.svelte-1xfsv4t > div > input").press("Enter")
 

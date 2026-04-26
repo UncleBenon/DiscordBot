@@ -716,7 +716,7 @@ class ChatCommands(commands.Cog):
             await sleep(1)
 
         try:
-            out = await voiceSynth2Function(prompt)
+            out = await voiceSynth2Function(prompt, int(voice))
         except Exception as e:
             self.vs2Queue.pop(0)
             await ctx.send(f"Voice Synth 2: {e}")
