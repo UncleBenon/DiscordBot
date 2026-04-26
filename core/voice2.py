@@ -18,7 +18,7 @@ VOICES = [
     "azelma"
 ]
 
-async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 1.0, debug:bool = False) -> str:
+async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 2.0, debug:bool = False) -> str:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
@@ -82,7 +82,7 @@ async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 1.0, de
             _loop = get_running_loop()
             content = await _loop.run_in_executor(exe, requests.get, link)
 
-    filename = f"{sha256(content.content).hexdigest()}.wav"
+    filename = f"{sha256(content).hexdigest()}.wav"
     fullPath = os.path.join(PATH, filename)
     if not os.path.exists(PATH):
         os.mkdir(PATH)

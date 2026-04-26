@@ -700,7 +700,7 @@ class ChatCommands(commands.Cog):
             return
 
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the voice synth 2 command\nVoice: {voice}\n\n{prompt[:1500]}"
+            f"{curTime()}  -  {ctx.author} used the voice synth 2 command\nVoice: {voice}\n\n{prompt[:1000]}"
         )
         print(f"{curTime()}  -  {ctx.author} used the voice synth 2 command")
 
