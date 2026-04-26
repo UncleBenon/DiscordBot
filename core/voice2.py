@@ -18,7 +18,7 @@ VOICES = [
     "azelma"
 ]
 
-async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 2.0, debug:bool = False) -> str:
+async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 1.0, debug:bool = False) -> str:
     async with async_playwright() as p:
         driver = await p.firefox.launch(headless=not debug)
         page = await driver.new_page()
