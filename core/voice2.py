@@ -34,6 +34,8 @@ async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 1.5, de
 
         await sleep(3)
 
+        await page.locator("#text-input > label > div > textarea").fill(prompt)
+        await sleep(1)
         await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.block.svelte-1plpy97.padded.auto-margin > button").click()
         await sleep(1)
         await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.block.svelte-1plpy97.padded.auto-margin > div:nth-child(3) > div > div:nth-child(1) > div > div:nth-child(1) > div.wrap.svelte-8epfm4 > div.head.svelte-8epfm4 > div > input").fill(str(temp))
@@ -47,8 +49,7 @@ async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 1.5, de
             await page.locator("#voice-select > div.svelte-1xfsv4t.container > div > div.wrap-inner.svelte-1xfsv4t > div > input").press("Enter")
             await sleep(1)
 
-        await page.locator("#text-input > label > div > textarea").fill(prompt)
-        await sleep(3)
+        await sleep(1)
         await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.row.svelte-7xavid.unequal-height > button.lg.primary.svelte-xzq5jh").press("Enter")
 
         _cc = 0
