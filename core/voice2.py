@@ -78,9 +78,9 @@ async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 1.0, de
                 link = _out
                 break
 
-    with ThreadPoolExecutor(1) as exe:
-        _loop = get_running_loop()
-        content = await _loop.run_in_executor(exe, requests.get, link)
+        with ThreadPoolExecutor(1) as exe:
+            _loop = get_running_loop()
+            content = await _loop.run_in_executor(exe, requests.get, link)
 
     filename = f"{sha256(content.content).hexdigest()}.wav"
     fullPath = os.path.join(PATH, filename)
