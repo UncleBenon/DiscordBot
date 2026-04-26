@@ -36,7 +36,7 @@ async def voiceSynth2Function(prompt: str, voice: str = "0", temp: float = 2.0, 
 
         await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.block.svelte-1plpy97.padded.auto-margin > button").click()
         await sleep(1)
-        await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.block.svelte-1plpy97.padded.auto-margin > div:nth-child(3) > div > div:nth-child(1) > div > div:nth-child(1) > div.wrap.svelte-8epfm4 > div.head.svelte-8epfm4 > div > input").fill(temp)
+        await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.block.svelte-1plpy97.padded.auto-margin > div:nth-child(3) > div > div:nth-child(1) > div > div:nth-child(1) > div.wrap.svelte-8epfm4 > div.head.svelte-8epfm4 > div > input").fill(str(temp))
 
         if voice > 7: 
             voice = 0
