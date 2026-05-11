@@ -66,7 +66,7 @@ async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 1.5, de
             if await page.get_by_text("Error").first.is_visible():
                 if _errorforce >= 10:
                     raise Exception("Error!")
-                await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.row.svelte-7xavid.unequal-height > button.lg.primary.svelte-xzq5jh").click()
+                await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.row.svelte-7xavid.unequal-height > button.lg.primary.svelte-xzq5jh").press("Enter")
                 _errorforce += 1
                 _cc = 0
             if await page.get_by_text("no audio").is_visible():
