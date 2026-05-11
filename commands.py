@@ -733,7 +733,7 @@ class ChatCommands(commands.Cog):
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
                     await ctx.send(
-                        f"# Voice Synth 2: {prompt}\nVoice: {VOICES[int(voice)]}, Temp: {temp}\n\n{ctx.author.mention}", file=file
+                        f"# Voice Synth 2: {prompt}\nVoice: {VOICES[int(voice)].capitalize()}, Temp: {temp}\n\n{ctx.author.mention}", file=file
                     )
                 await stored.delete()
                 remove(out)
