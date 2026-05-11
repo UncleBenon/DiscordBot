@@ -1,5 +1,5 @@
 from os import path, remove
-from core.misc import curTime
+from core.misc import curTime, clamp
 from core.sha import getSha256
 from core.SDXL_Google import Stable_XL
 from core.dalle import dalle
@@ -699,6 +699,8 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
+        temp = clamp(temp, 0.0, 2.0)
+
         await self.DEBUG_CHANNEL.send(
             f"{curTime()}  -  {ctx.author} used the voice synth 2 command\nVoice: {VOICES[int(voice)]}\nTemp: {temp}\n\n{prompt[:1000]}"
         )
@@ -714,11 +716,6 @@ class ChatCommands(commands.Cog):
 
         while self.vs2Queue[0] != queueSha:
             await sleep(1)
-
-        try:
-            temp = float(temp)
-        except ValueError:
-            temp = 1.5
 
         try:
             out = await voiceSynth2Function(prompt, int(voice), temp)

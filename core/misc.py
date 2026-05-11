@@ -28,3 +28,6 @@ async def convertAsync(filePath : str, outputFileType : str = ".ogg") -> str:
         _loop = get_running_loop()
         content = await _loop.run_in_executor(exe, convert)
     return content
+
+def clamp(num, mini, maxi):
+    return max(mini, min(num, maxi))
