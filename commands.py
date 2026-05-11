@@ -12,7 +12,7 @@ from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
 from core.twitterDownload import downloadTwitterVideoFunction
 from core.stable import stable_xl_function
-from core.voice2 import voiceSynth2Function
+from core.voice2 import voiceSynth2Function, VOICES
 from asyncio import sleep
 from discord.ext import commands
 from discord import app_commands
@@ -692,7 +692,7 @@ class ChatCommands(commands.Cog):
             app_commands.Choice(name="azelma", value='7')
         ]
     )
-    async def VoiceSynth2(self, ctx: commands.Context, prompt: str, voice:str = '0') -> None:
+    async def VoiceSynth2(self, ctx: commands.Context, prompt: str, voice:str = '0', temp: float = 1.5) -> None:
         if not ctx:
             return
 
@@ -716,10 +716,15 @@ class ChatCommands(commands.Cog):
             await sleep(1)
 
         try:
-            out = await voiceSynth2Function(prompt, int(voice))
+            temp = float(temp)
+        except ValueError:
+            temp = 1.5
+
+        try:
+            out = await voiceSynth2Function(prompt, int(voice), temp)
         except Exception as e:
             self.vs2Queue.pop(0)
-            await ctx.send(f"Voice Synth 2: {e}")
+            await ctx.send(f"Voice Synth 2: {str(e)[:1500]}")
             await stored.delete()
             return
 
@@ -731,7 +736,7 @@ class ChatCommands(commands.Cog):
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
                     await ctx.send(
-                        f"# Voice Synth 2: {prompt}\n{ctx.author.mention}", file=file
+                        f"# Voice Synth 2: {prompt}\nVoice: {VOICES[int(voice)]}\n{ctx.author.mention}", file=file
                     )
                 await stored.delete()
                 remove(out)
