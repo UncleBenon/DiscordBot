@@ -8,7 +8,6 @@ from core.removebg import RemoveBackGroundFunction
 from core.ghiblify import ghiblifyFunction
 from core.dream import dreamMasterFunc
 from core.twitterDownload import downloadTwitterVideoFunction
-from core.stable import stable_xl_function
 from core.voice2 import voiceSynth2Function, VOICES
 from asyncio import sleep
 from discord.ext import commands
@@ -28,7 +27,6 @@ class ChatCommands(commands.Cog):
         self.ghibliQueue = []
         self.dreamQueue = []
         self.twitVidQueue = []
-        self.stableDiffQueue = []
         self.vs2Queue = []
 
     async def checkChannel(self, c: commands.Context) -> None:
@@ -446,101 +444,23 @@ class ChatCommands(commands.Cog):
             return
 
     @commands.hybrid_command(
-        name="sd",
-        description="new stable, which supports image2image",
-    )
-    async def stableDiff(
-        self,
-        ctx: commands.Context,
-        prompt: str,
-        image: discord.Attachment = None,
-        imageurl: str = None,
-    ):
-        if not ctx:
-            return
-
-        if not await self.checkChannel(ctx):
-            return
-
-        img = None
-        if image:
-            img = image.url
-        elif imageurl:
-            img = imageurl
-
-        if img and not img.startswith("http"):
-            await ctx.send(
-                "Not a valid URL.",
-                ephemeral=True,
-                delete_after=60,
-            )
-            return
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Stable Diffusion command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the Stable Diffusion command")
-
-        if len(self.stableDiffQueue) > 0:
-            stored = await ctx.send(
-                f"in queue {len(self.stableDiffQueue)}", ephemeral=True
-            )
-        else:
-            stored = await ctx.send("Generating", ephemeral=True)
-
-        queueSha = getSha256(prompt)
-        self.stableDiffQueue.append(queueSha)
-
-        while self.stableDiffQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await stable_xl_function(prompt, img)
-        except Exception as e:
-            self.stableDiffQueue.pop(0)
-            await ctx.send(f"Stable Diffusion: {e}")
-            await stored.delete()
-            return
-
-        if len(prompt) > 1500:
-            prompt = ""
-        try:
-            async with ctx.typing():
-                files: list[discord.File] = []
-                for file in out:
-                    with open(file, "rb") as f:
-                        files.append(discord.File(f, filename=f"{path.basename(file)}"))
-                await ctx.send(
-                    f"# Stable Diffusion: {prompt}\n{ctx.author.mention}", files=files
-                )
-                await stored.delete()
-                for f in out:
-                    remove(f)
-                self.stableDiffQueue.pop(0)
-        except Exception as e:
-            self.stableDiffQueue.pop(0)
-            for f in out:
-                remove(f)
-            await ctx.send(f"Stable Diffusion: {e}")
-            await stored.delete()
-            return
-
-    @commands.hybrid_command(
         name="vs2", description="Voice Synth 2 - Make an AI say funny things"
     )
     @app_commands.choices(
         voice=[
-            app_commands.Choice(name="alba", value='0'),
-            app_commands.Choice(name="marius", value='1'),
-            app_commands.Choice(name="javert", value='2'),
-            app_commands.Choice(name="jean", value='3'),
-            app_commands.Choice(name="fantine", value='4'),
-            app_commands.Choice(name="cosette", value='5'),
-            app_commands.Choice(name="eponine", value='6'),
-            app_commands.Choice(name="azelma", value='7')
+            app_commands.Choice(name="alba", value="0"),
+            app_commands.Choice(name="marius", value="1"),
+            app_commands.Choice(name="javert", value="2"),
+            app_commands.Choice(name="jean", value="3"),
+            app_commands.Choice(name="fantine", value="4"),
+            app_commands.Choice(name="cosette", value="5"),
+            app_commands.Choice(name="eponine", value="6"),
+            app_commands.Choice(name="azelma", value="7"),
         ]
     )
-    async def VoiceSynth2(self, ctx: commands.Context, prompt: str, voice:str = '0', temp: float = 1.5) -> None:
+    async def VoiceSynth2(
+        self, ctx: commands.Context, prompt: str, voice: str = "0", temp: float = 1.5
+    ) -> None:
         if not ctx:
             return
 
@@ -581,7 +501,8 @@ class ChatCommands(commands.Cog):
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
                     await ctx.send(
-                        f"# Voice Synth 2: {prompt}\nVoice: {VOICES[int(voice)].capitalize()}, Temp: {temp}\n\n{ctx.author.mention}", file=file
+                        f"# Voice Synth 2: {prompt}\nVoice: {VOICES[int(voice)].capitalize()}, Temp: {temp}\n\n{ctx.author.mention}",
+                        file=file,
                     )
                 await stored.delete()
                 remove(out)
