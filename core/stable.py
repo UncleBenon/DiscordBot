@@ -12,12 +12,12 @@ URL = "https://diffusers-unofficial-sdxl-turbo-i2i-t2i.hf.space/"
 
 async def stable_xl_function(prompt: str, image: str = None, DEBUG: bool = False) -> list[str]:
     _del_reminder = False
-    _prompt = "#component-5 > label > textarea"
-    _upload_button = "#component-9 > div.image-container.svelte-rrgd5g > div > button"
-    _options = "#component-12 > button"
-    _seed_inp = "#component-15 > div.wrap.svelte-pc1gm4 > div > input"
-    _generate_button = "#component-6"
-    _generated_image = "#component-11 > button > div > img"
+    _prompt = "#component-6 > label > textarea"
+    _upload_button = "#component-10 > div.image-container.svelte-rrgd5g > div > button"
+    _options = "#component-13 > button"
+    _seed_inp = "#component-16 > div.wrap.svelte-pc1gm4 > div > input"
+    _generate_button = "#component-7"
+    _generated_image = "#component-12 > button > div > img"
     _activate = "#component-3"
 
     if image:
