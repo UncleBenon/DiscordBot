@@ -1,14 +1,11 @@
 from os import path, remove
 from core.misc import curTime, clamp
 from core.sha import getSha256
-from core.SDXL_Google import Stable_XL
-from core.dalle import dalle
 from core.voice import voiceSynthFunction
 from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
 from core.removebg import RemoveBackGroundFunction
 from core.ghiblify import ghiblifyFunction
-from core.flux import fluxMasterFunction
 from core.dream import dreamMasterFunc
 from core.twitterDownload import downloadTwitterVideoFunction
 from core.stable import stable_xl_function
@@ -24,14 +21,11 @@ class ChatCommands(commands.Cog):
         self.bot = bot
         self.BOT_CHANNEL = botChannel
         self.DEBUG_CHANNEL = debugChannel
-        self.stableXLQueue = []
-        self.dalleQueue = []
         self.vsQueue = []
         self.rbgQueue = []
         self.smQueue = []
         self.saQueue = []
         self.ghibliQueue = []
-        self.fluxQueue = []
         self.dreamQueue = []
         self.twitVidQueue = []
         self.stableDiffQueue = []
@@ -49,102 +43,6 @@ class ChatCommands(commands.Cog):
             except Exception as e:
                 print(e)
             return False
-
-    @commands.hybrid_command(
-        name="sdx",
-        description="Stable Diffusion XL - Beefier version of Stable Diffusion",
-    )
-    async def StableDiffXL(
-        self, ctx: commands.Context, prompt: str, negative: str = None
-    ) -> None:
-        if not ctx:
-            return
-
-        if not await self.checkChannel(ctx):
-            return
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the stable XL command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the stable XL command")
-
-        if len(self.stableXLQueue) > 0:
-            stored = await ctx.send(
-                f"in queue {len(self.stableXLQueue)}", ephemeral=True
-            )
-        else:
-            stored = await ctx.send("Generating", ephemeral=True)
-
-        queueSha = getSha256(prompt)
-        self.stableXLQueue.append(queueSha)
-
-        while self.stableXLQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await Stable_XL(prompt, negative)
-        except Exception as e:
-            self.stableXLQueue.pop(0)
-            await ctx.send(f"stable XL: {e}")
-            await stored.delete()
-            return
-
-        async with ctx.typing():
-            self.stableXLQueue.pop(0)
-            files: list[discord.File] = []
-            for file in out:
-                with open(file, "rb") as f:
-                    files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.send(f"# Stable XL: {prompt}\n{ctx.author.mention}", files=files)
-            await stored.delete()
-            for f in out:
-                remove(f)
-
-    @commands.hybrid_command(
-        name="dalle",
-        description="Dalle - one of the very first image gens, very jank",
-    )
-    async def Dalle(self, ctx: commands.Context, prompt: str) -> None:
-        if not ctx:
-            return
-
-        if not await self.checkChannel(ctx):
-            return
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Dalle command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the Dalle command")
-
-        if len(self.dalleQueue) > 0:
-            stored = await ctx.send(f"in queue {len(self.dalleQueue)}", ephemeral=True)
-        else:
-            stored = await ctx.send("Generating", ephemeral=True)
-
-        queueSha = getSha256(prompt)
-        self.dalleQueue.append(queueSha)
-
-        while self.dalleQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await dalle(prompt)
-        except Exception as e:
-            self.dalleQueue.pop(0)
-            await ctx.send(f"dalle: {e}")
-            await stored.delete()
-            return
-
-        async with ctx.typing():
-            self.dalleQueue.pop(0)
-            files: list[discord.File] = []
-            for file in out:
-                with open(file, "rb") as f:
-                    files.append(discord.File(f, filename=f"{getSha256(f)}.png"))
-            await ctx.send(f"# Dalle: {prompt}\n{ctx.author.mention}", files=files)
-            await stored.delete()
-            for f in out:
-                remove(f)
 
     @commands.hybrid_command(
         name="vs", description="Voice Synth - Make an AI say funny things"
@@ -426,56 +324,6 @@ class ChatCommands(commands.Cog):
             await ctx.send(f"# Ghiblify: \n{img}\n{ctx.author.mention}", file=file)
             await stored.delete()
             remove(out)
-
-    @commands.hybrid_command(name="flux", description="Flux Image Gen - the beefiest.")
-    async def fluxCommand(self, ctx: commands.Context, prompt: str) -> None:
-        if not ctx:
-            return
-
-        if not await self.checkChannel(ctx):
-            return
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Flux command\n\n{prompt[:1500]}"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the Flux command")
-
-        if len(self.fluxQueue) > 0:
-            stored = await ctx.send(f"in queue {len(self.fluxQueue)}", ephemeral=True)
-        else:
-            stored = await ctx.send("Generating", ephemeral=True)
-
-        queueSha = getSha256(prompt)
-        self.fluxQueue.append(queueSha)
-
-        while self.fluxQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await fluxMasterFunction(prompt)
-        except Exception as e:
-            self.fluxQueue.pop(0)
-            await ctx.send(f"Flux: {e}")
-            await stored.delete()
-            return
-
-        if len(prompt) > 1500:
-            prompt = ""
-        try:
-            async with ctx.typing():
-                with open(out, "rb") as f:
-                    _name = path.basename(out)
-                    file = discord.File(f, filename=_name)
-                    await ctx.send(f"# Flux: {prompt}\n{ctx.author.mention}", file=file)
-                await stored.delete()
-                remove(out)
-                self.fluxQueue.pop(0)
-        except Exception as e:
-            self.fluxQueue.pop(0)
-            remove(out)
-            await ctx.send(f"Flux: {e}")
-            await stored.delete()
-            return
 
     @commands.hybrid_command(
         name="dream", description="Dream Image Gen - like flux, pretty beefy.."
