@@ -18,6 +18,7 @@ async def stable_xl_function(prompt: str, image: str = None, DEBUG: bool = False
     _seed_inp = "#component-15 > div.wrap.svelte-pc1gm4 > div > input"
     _generate_button = "#component-6"
     _generated_image = "#component-11 > button > div > img"
+    _activate = "#component-3"
 
     if image:
         if image.startswith("http"):
@@ -34,6 +35,8 @@ async def stable_xl_function(prompt: str, image: str = None, DEBUG: bool = False
         if await page.get_by_text("Your space is in error").is_visible():
             raise Exception("Space is having errors, not the bot's fault")
 
+        await sleep(1)
+        await page.click(_activate)
         await sleep(1)
         await page.click(_options) # open options
 
