@@ -52,13 +52,15 @@ async def dreamBigMasterFunc(
             await sleep(0.5)
             await page.locator(_RATIO).press("Backspace")
             await sleep(0.5)
-            await page.locator(_RATIO).fill(RES[res])
-            await sleep(1)
-        await page.locator(_PROMPT).fill(prompt)
-        await sleep(1)
+            await page.locator(_RATIO).press_sequentially(RES[res])
+            await sleep(0.5)
+            await page.locator(_RATIO).press("Enter")
+            await sleep(0.5)
         if negPrompt:
             await page.locator(_NEG_PROMPT).fill(negPrompt)
             await sleep(1)
+        await page.locator(_PROMPT).fill(prompt)
+        await sleep(1)
         await page.locator(_GENERATE).click()
 
         _cc = 0
