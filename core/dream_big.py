@@ -46,8 +46,10 @@ async def dreamBigMasterFunc(
         await page.locator(_PROMPT_REFINE).click()
         await sleep(1)
         if res > 0:
+            await page.locator(_RATIO).click()
+            await sleep(0.5)
             await page.locator(_RATIO).clear()
-            await sleep(1)
+            await sleep(0.5)
             await page.locator(_RATIO).fill(RES[res])
             await sleep(1)
         await page.locator(_PROMPT).fill(prompt)

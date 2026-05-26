@@ -387,7 +387,7 @@ class ChatCommands(commands.Cog):
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
                     await ctx.send(
-                        f"# Dream Big: {prompt}\n{RES[size]}\n{ctx.author.mention}",
+                        f"# Dream Big: {prompt}\nSize: {RES[size]}\n{ctx.author.mention}",
                         file=file,
                     )
                 await stored.delete()
