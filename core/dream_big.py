@@ -48,7 +48,9 @@ async def dreamBigMasterFunc(
         if res > 0:
             await page.locator(_RATIO).click()
             await sleep(0.5)
-            await page.locator(_RATIO).clear()
+            await page.locator(_RATIO).press("Control+A")
+            await sleep(0.5)
+            await page.locator(_RATIO).press("Backspace")
             await sleep(0.5)
             await page.locator(_RATIO).fill(RES[res])
             await sleep(1)
