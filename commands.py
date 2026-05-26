@@ -344,7 +344,7 @@ class ChatCommands(commands.Cog):
         ]
     )
     async def dreamBigCommand(
-        self, ctx: commands.Context, prompt: str, neg_prompt: str = "", size: str = "0"
+        self, ctx: commands.Context, prompt: str, neg_prompt: str = None, size: str = "0"
     ) -> None:
         if not ctx:
             return
