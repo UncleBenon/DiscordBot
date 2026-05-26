@@ -6,9 +6,10 @@ from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
 from core.removebg import RemoveBackGroundFunction
 from core.ghiblify import ghiblifyFunction
-from core.dream import dreamMasterFunc
 from core.twitterDownload import downloadTwitterVideoFunction
 from core.voice2 import voiceSynth2Function, VOICES
+from core.dream_small import dreamSmallMasterFunc
+from core.dream_big import dreamBigMasterFunc, RES
 from asyncio import sleep
 from discord.ext import commands
 from discord import app_commands
@@ -25,7 +26,8 @@ class ChatCommands(commands.Cog):
         self.smQueue = []
         self.saQueue = []
         self.ghibliQueue = []
-        self.dreamQueue = []
+        self.dreamBigQueue = []
+        self.dreamSmallQueue = []
         self.twitVidQueue = []
         self.vs2Queue = []
 
@@ -324,19 +326,25 @@ class ChatCommands(commands.Cog):
             remove(out)
 
     @commands.hybrid_command(
-        name="dream", description="Dream Image Gen - like flux, pretty beefy.."
+        name="dbig", description="Dream Big Image Gen - pretty beefy."
     )
     @app_commands.choices(
         size=[
             app_commands.Choice(name="1:1", value="0"),
-            app_commands.Choice(name="3:4", value="1"),
-            app_commands.Choice(name="4:3", value="2"),
-            app_commands.Choice(name="9:16", value="3"),
-            app_commands.Choice(name="16:9", value="4"),
+            app_commands.Choice(name="4:3", value="1"),
+            app_commands.Choice(name="3:4", value="2"),
+            app_commands.Choice(name="16:9", value="3"),
+            app_commands.Choice(name="9:16", value="4"),
+            app_commands.Choice(name="3:2", value="5"),
+            app_commands.Choice(name="2:3", value="6"),
+            app_commands.Choice(name="21:9", value="7"),
+            app_commands.Choice(name="9:21", value="8"),
+            app_commands.Choice(name="9:7", value="9"),
+            app_commands.Choice(name="7:9", value="10"),
         ]
     )
-    async def dreamCommand(
-        self, ctx: commands.Context, prompt: str, size: str = "2"
+    async def dreamBigCommand(
+        self, ctx: commands.Context, prompt: str, negPrompt: str = None, size: str = "0"
     ) -> None:
         if not ctx:
             return
@@ -344,27 +352,30 @@ class ChatCommands(commands.Cog):
         if not await self.checkChannel(ctx):
             return
 
+        size = int(size)
         await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Dream command\nSize: {size}\n\n{prompt[:1500]}"
+            f"{curTime()}  -  {ctx.author} used the Dream Big command\nSize: {RES[size]}\n\n{prompt[:1500]}"
         )
-        print(f"{curTime()}  -  {ctx.author} used the Dream command")
+        print(f"{curTime()}  -  {ctx.author} used the Dream Big command")
 
-        if len(self.dreamQueue) > 0:
-            stored = await ctx.send(f"in queue {len(self.dreamQueue)}", ephemeral=True)
+        if len(self.dreamBigQueue) > 0:
+            stored = await ctx.send(
+                f"in queue {len(self.dreamBigQueue)}", ephemeral=True
+            )
         else:
             stored = await ctx.send("Generating", ephemeral=True)
 
         queueSha = getSha256(prompt)
-        self.dreamQueue.append(queueSha)
+        self.dreamBigQueue.append(queueSha)
 
-        while self.dreamQueue[0] != queueSha:
+        while self.dreamBigQueue[0] != queueSha:
             await sleep(1)
 
         try:
-            out = await dreamMasterFunc(prompt, int(size))
+            out = await dreamBigMasterFunc(prompt, negPrompt, size)
         except Exception as e:
-            self.dreamQueue.pop(0)
-            await ctx.send(f"Dream: {e}")
+            self.dreamBigQueue.pop(0)
+            await ctx.send(f"Dream Big: {e}")
             await stored.delete()
             return
 
@@ -376,15 +387,73 @@ class ChatCommands(commands.Cog):
                     _name = path.basename(out)
                     file = discord.File(f, filename=_name)
                     await ctx.send(
-                        f"# Dream: {prompt}\n{ctx.author.mention}", file=file
+                        f"# Dream Big: {prompt}\n{RES[size]}\n{ctx.author.mention}",
+                        file=file,
                     )
                 await stored.delete()
                 remove(out)
-                self.dreamQueue.pop(0)
+                self.dreamBigQueue.pop(0)
         except Exception as e:
-            self.dreamQueue.pop(0)
+            self.dreamBigQueue.pop(0)
             remove(out)
-            await ctx.send(f"Dream: {e}")
+            await ctx.send(f"Dream Big: {e}")
+            await stored.delete()
+            return
+
+    @commands.hybrid_command(
+        name="dsmall", description="Dream Small Image Gen - less beefy."
+    )
+    async def dreamSmallCommand(self, ctx: commands.Context, prompt: str) -> None:
+        if not ctx:
+            return
+
+        if not await self.checkChannel(ctx):
+            return
+
+        await self.DEBUG_CHANNEL.send(
+            f"{curTime()}  -  {ctx.author} used the Dream Small command\n\n{prompt[:1500]}"
+        )
+        print(f"{curTime()}  -  {ctx.author} used the Dream Small command")
+
+        if len(self.dreamSmallQueue) > 0:
+            stored = await ctx.send(
+                f"in queue {len(self.dreamSmallQueue)}", ephemeral=True
+            )
+        else:
+            stored = await ctx.send("Generating", ephemeral=True)
+
+        queueSha = getSha256(prompt)
+        self.dreamSmallQueue.append(queueSha)
+
+        while self.dreamSmallQueue[0] != queueSha:
+            await sleep(1)
+
+        try:
+            out = await dreamSmallMasterFunc(prompt)
+        except Exception as e:
+            self.dreamSmallQueue.pop(0)
+            await ctx.send(f"Dream Small: {e}")
+            await stored.delete()
+            return
+
+        if len(prompt) > 1500:
+            prompt = ""
+        try:
+            async with ctx.typing():
+                with open(out, "rb") as f:
+                    _name = path.basename(out)
+                    file = discord.File(f, filename=_name)
+                    await ctx.send(
+                        f"# Dream Small: {prompt}\n{ctx.author.mention}",
+                        file=file,
+                    )
+                await stored.delete()
+                remove(out)
+                self.dreamSmallQueue.pop(0)
+        except Exception as e:
+            self.dreamSmallQueue.pop(0)
+            remove(out)
+            await ctx.send(f"Dream Small: {e}")
             await stored.delete()
             return
 
