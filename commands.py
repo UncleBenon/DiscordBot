@@ -344,7 +344,7 @@ class ChatCommands(commands.Cog):
         ]
     )
     async def dreamBigCommand(
-        self, ctx: commands.Context, prompt: str, negPrompt: str = None, size: str = "0"
+        self, ctx: commands.Context, prompt: str, neg_prompt: str = None, size: str = "0"
     ) -> None:
         if not ctx:
             return
@@ -372,7 +372,7 @@ class ChatCommands(commands.Cog):
             await sleep(1)
 
         try:
-            out = await dreamBigMasterFunc(prompt, negPrompt, size)
+            out = await dreamBigMasterFunc(prompt, neg_prompt, size)
         except Exception as e:
             self.dreamBigQueue.pop(0)
             await ctx.send(f"Dream Big: {e}")
