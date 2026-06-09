@@ -528,7 +528,7 @@ class ChatCommands(commands.Cog):
         ]
     )
     async def VoiceSynth2(
-        self, ctx: commands.Context, prompt: str, voice: str = "0", temp: float = 1.5
+        self, ctx: commands.Context, prompt: str, voice: str = "3", temp: float = 1.0
     ) -> None:
         if not ctx:
             return
