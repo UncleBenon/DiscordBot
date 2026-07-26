@@ -5,7 +5,6 @@ from core.voice import voiceSynthFunction
 from core.WoW import getWoWTokenPrice
 from core.OSRS import getBondPriceOSRS
 from core.removebg import RemoveBackGroundFunction
-from core.ghiblify import ghiblifyFunction
 from core.twitterDownload import downloadTwitterVideoFunction
 from core.voice2 import voiceSynth2Function, VOICES
 from core.dream_small import dreamSmallMasterFunc
@@ -25,7 +24,6 @@ class ChatCommands(commands.Cog):
         self.rbgQueue = []
         self.smQueue = []
         self.saQueue = []
-        self.ghibliQueue = []
         self.dreamBigQueue = []
         self.dreamSmallQueue = []
         self.twitVidQueue = []
@@ -255,75 +253,6 @@ class ChatCommands(commands.Cog):
             embed.add_field(name="Classic:", value=f":coin: {tprice[3]}", inline=True)
             await ctx.send(embed=embed)
             await stored.delete()
-
-    @commands.hybrid_command(
-        name="ghibli",
-        description="Ghiblify - You should have seen this already.",
-    )
-    async def ghibliCommand(
-        self,
-        ctx: commands.Context,
-        image: discord.Attachment = None,
-        imageurl: str = None,
-    ):
-        if not ctx:
-            return
-
-        if not await self.checkChannel(ctx):
-            return
-
-        if not image and not imageurl:
-            await ctx.send(
-                "Need an image.",
-                ephemeral=True,
-                delete_after=60,
-            )
-            return
-
-        if image:
-            img = image.url
-        elif imageurl:
-            img = imageurl
-
-        if not img.startswith("http"):
-            await ctx.send(
-                "Not a valid URL.",
-                ephemeral=True,
-                delete_after=60,
-            )
-            return
-
-        await self.DEBUG_CHANNEL.send(
-            f"{curTime()}  -  {ctx.author} used the Ghiblify command"
-        )
-        print(f"{curTime()}  -  {ctx.author} used the Ghiblify command")
-
-        if len(self.ghibliQueue) > 0:
-            stored = await ctx.send(f"in queue {len(self.ghibliQueue)}", ephemeral=True)
-        else:
-            stored = await ctx.send("Working", ephemeral=True)
-
-        queueSha = getSha256(img)
-        self.ghibliQueue.append(queueSha)
-
-        while self.ghibliQueue[0] != queueSha:
-            await sleep(1)
-
-        try:
-            out = await ghiblifyFunction(img)
-        except Exception as e:
-            self.ghibliQueue.pop(0)
-            await ctx.send(f"Ghiblify: {e}")
-            await stored.delete()
-            return
-
-        async with ctx.typing():
-            self.ghibliQueue.pop(0)
-            with open(out, "rb") as f:
-                file = discord.File(f, filename=f"{getSha256(f)}.webp")
-            await ctx.send(f"# Ghiblify: \n{img}\n{ctx.author.mention}", file=file)
-            await stored.delete()
-            remove(out)
 
     @commands.hybrid_command(
         name="dbig", description="Dream Big Image Gen - pretty beefy."
