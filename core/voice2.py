@@ -59,7 +59,7 @@ async def voiceSynth2Function(prompt: str, voice: int = 0, temp: float = 1.5, de
         while not await found.is_visible():
             await sleep(1)
             _cc += 1
-            if _cc >= 900:
+            if _cc >= 300:
                 raise Exception("timed out")
             if await page.get_by_text("Error").first.is_visible() and not await page.locator("body > div:nth-child(1) > div.gradio-container.gradio-container-6-3-0.svelte-99kmwu > main > div.wrap.svelte-zxu34v > div > div > div.row.svelte-7xavid.unequal-height > div:nth-child(1) > div.row.svelte-7xavid.unequal-height > button.lg.stop.svelte-xzq5jh").is_visible():
                 if _errorforce >= 10:
